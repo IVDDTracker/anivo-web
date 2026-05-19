@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/jpeg" href="/favicon.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Generate a personalized Rainbow Bridge poem for your pet. A free tool by Anivo to help you remember and honor your beloved companion.">
+<title>Rainbow Bridge Poem Generator — Anivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream: #F4EFE6; --cream-2: #EAE4D8; --cream-3: #D4CFC6;
+    --ink: #18160F; --ink-2: #2A2620;
+    --gold: #A07840; --gold-soft: #B89366; --muted: #7A7060;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .container { max-width: 780px; margin: 0 auto; padding: 0 32px; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+    background: rgba(244,239,230,0.78);
+    border-bottom: 1px solid rgba(24,22,15,0.06);
+  }
+  nav .inner { max-width: 1240px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Fraunces', serif; font-weight: 600; font-size: 22px; letter-spacing: -0.5px; font-style: italic; text-decoration: none; color: var(--ink); }
+  .logo::after { content: '·'; color: var(--gold); margin-left: 6px; }
+
+  .hero { padding: 140px 0 60px; text-align: center; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
+  .hero h1 { font-family: 'Fraunces', serif; font-size: clamp(40px, 6vw, 72px); font-weight: 400; line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 20px; }
+  .hero h1 em { font-style: italic; color: var(--gold); font-weight: 300; }
+  .hero p { font-size: 17px; color: var(--muted); font-weight: 300; line-height: 1.65; max-width: 540px; margin: 0 auto 48px; }
+
+  /* FORM */
+  .form-card { background: var(--cream-2); border-radius: 28px; padding: 48px; margin-bottom: 40px; }
+  .field { margin-bottom: 24px; }
+  label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+  input, textarea, select {
+    width: 100%; background: var(--cream); border: 1px solid var(--cream-3);
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 15px; color: var(--ink); font-family: 'Inter', sans-serif;
+    outline: none; transition: border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  .fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .generate-btn {
+    width: 100%; padding: 18px; border-radius: 16px;
+    background: var(--ink); color: var(--cream);
+    border: none; cursor: pointer;
+    font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .generate-btn:hover { background: var(--ink-2); transform: translateY(-1px); }
+  .generate-btn:disabled { background: var(--cream-3); cursor: not-allowed; transform: none; }
+
+  /* SEO CONTENT */
+  .seo-content { padding: 80px 0; border-top: 1px solid rgba(24,22,15,0.08); }
+  .seo-content h2 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 400; letter-spacing: -0.5px; margin-bottom: 16px; }
+  .seo-content p { font-size: 15px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 20px; max-width: 680px; }
+
+  footer { padding: 60px 0 40px; border-top: 1px solid rgba(24,22,15,0.08); }
+  .footer-bottom { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+
+  @media (max-width: 600px) {
+    .form-card { padding: 28px 24px; }
+    .poem-card { padding: 36px 28px; }
+    .fields-row { grid-template-columns: 1fr; }
+    .poem-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/" class="logo">Anivo</a>
+    <a href="/#download" style="background: #18160F; color: #F4EFE6; padding: 10px 20px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-decoration: none; text-transform: uppercase;">Download</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Free tool by Anivo</div>
+    <h1>Rainbow Bridge<br><em>Poem Generator</em></h1>
+    <p>Tell us a little about your companion and we'll write a personal poem — something to keep, share, or read quietly on a hard day.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="form-card">
+    <div class="fields-row">
+      <div class="field">
+        <label>Pet's name</label>
+        <input type="text" id="petName" placeholder="Luna" maxlength="40">
+      </div>
+      <div class="field">
+        <label>Type of animal</label>
+        <select id="petType">
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+          <option value="bird">Bird</option>
+          <option value="rabbit">Rabbit</option>
+          <option value="horse">Horse</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fields-row">
+      <div class="field">
+        <label>Breed (optional)</label>
+        <input type="text" id="petBreed" placeholder="Golden Retriever">
+      </div>
+      <div class="field">
+        <label>Years together</label>
+        <input type="number" id="petYears" placeholder="12" min="0" max="30">
+      </div>
+    </div>
+    <div class="field">
+      <label>What made them special?</label>
+      <textarea id="petTrait" placeholder="She always knew when I was sad. She'd rest her head on my lap without being asked."></textarea>
+    </div>
+    <div class="field">
+      <label>A favourite memory (optional)</label>
+      <textarea id="petMemory" placeholder="Sunday mornings on the couch, sun coming through the window..."></textarea>
+    </div>
+    <div style="text-align: center; padding: 8px 0 0;">
+      <p style="font-size: 14px; color: var(--muted); font-weight: 300; margin-bottom: 20px; font-style: italic;">Personalized poems are generated inside the Anivo app — where your pet's story already lives.</p>
+      <a href="https://apps.apple.com/app/anivo-private-pet-memorial" style="display: inline-flex; align-items: center; gap: 12px; background: var(--ink); color: var(--cream); padding: 16px 28px; border-radius: 14px; text-decoration: none; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border: 2px solid rgba(24,22,15,0.7);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 12.5c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-2-3.7-2-1.6-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.3 2.5 1.3-.1 1.8-.9 3.4-.9 1.6 0 2 .9 3.4.8 1.4 0 2.3-1.2 3.1-2.5.7-1 1.3-2.1 1.6-3.2-1.7-.6-2.2-3.5-2.2-3.6zM14.9 5.4c.7-.9 1.2-2.1 1.1-3.4-1 .1-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.3 1.2.1 2.4-.6 3-1.5z"/></svg>
+        Get Anivo on App Store
+      </a>
+    </div>
+  </div>
+
+  <div class="seo-content">
+    <h2>About the Rainbow Bridge</h2>
+    <p>The Rainbow Bridge is a comforting concept shared among pet owners — a place where beloved animals wait for their human companions before crossing into the afterlife together. The story has brought comfort to millions of grieving pet owners around the world.</p>
+    <p>A personalized Rainbow Bridge poem can be a meaningful way to honor your pet's memory, to share with family, or simply to have something to hold onto during a difficult time. Our generator uses the details you share to write something that feels like it was written about your companion specifically — because it was.</p>
+    <h2 style="margin-top: 48px;">Keeping memories alive</h2>
+    <p>A poem is one way to remember. <a href="/" style="color: var(--gold);">Anivo</a> is another — a private app where you can store photographs, videos, and memories of your pet in one quiet place. Many people use both: a poem for the hard days, and an app for every day.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <div>© 2026 Anivo. Made with care.</div>
+      <div>anivo.app</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

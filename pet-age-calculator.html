@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Age Calculator — How Old Is Your Pet in Human Years? | Anivo</title>
+<meta name="description" content="Find out how old your dog or cat is in human years. Free pet age calculator — accurate, instant, and based on size and breed.">
+<meta name="keywords" content="pet age calculator, dog age in human years, cat age in human years, how old is my dog, how old is my cat, dog years calculator, cat years calculator">
+<link rel="icon" type="image/jpeg" href="/favicon.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cream: #F4EFE6;
+    --cream-2: #EAE4D8;
+    --cream-3: #D4CFC6;
+    --ink: #18160F;
+    --ink-2: #2A2620;
+    --gold: #A07840;
+    --gold-soft: #B89366;
+    --muted: #7A7060;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+    background: rgba(244, 239, 230, 0.78);
+    border-bottom: 1px solid rgba(24, 22, 15, 0.06);
+  }
+  nav .container {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 18px; padding-bottom: 18px;
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 600; font-size: 22px;
+    letter-spacing: -0.5px; font-style: italic;
+    text-decoration: none; color: var(--ink);
+  }
+  .logo::after { content: '·'; color: var(--gold); margin-left: 6px; }
+  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .nav-link:hover { color: var(--ink); }
+
+  /* PAGE */
+  .page { padding: 140px 0 100px; }
+  .page-inner { max-width: 760px; margin: 0 auto; }
+
+  .eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 4px;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(40px, 5.5vw, 72px);
+    font-weight: 400; line-height: 1.0;
+    letter-spacing: -2px; margin-bottom: 20px;
+  }
+  h1 em { font-style: italic; font-weight: 300; color: var(--gold); }
+
+  .intro {
+    font-size: 17px; line-height: 1.65;
+    color: var(--muted); font-weight: 300;
+    margin-bottom: 56px; max-width: 560px;
+  }
+
+  /* CALCULATOR CARD */
+  .calc-card {
+    background: var(--ink);
+    border-radius: 28px;
+    padding: 48px;
+    margin-bottom: 48px;
+    color: var(--cream);
+  }
+
+  .calc-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 3px;
+    color: var(--gold-soft); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* TYPE TOGGLE */
+  .toggle-row {
+    display: flex; gap: 10px; margin-bottom: 32px;
+  }
+  .toggle-btn {
+    flex: 1; padding: 14px; border-radius: 12px;
+    border: 1.5px solid rgba(244, 239, 230, 0.12);
+    background: transparent; color: rgba(244, 239, 230, 0.45);
+    font-family: 'Fraunces', serif; font-size: 20px; font-style: italic;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .toggle-btn.active {
+    background: rgba(160, 120, 64, 0.2);
+    border-color: var(--gold);
+    color: var(--cream);
+  }
+
+  /* SIZE SELECT (dog only) */
+  .size-row {
+    display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .size-btn {
+    padding: 9px 16px; border-radius: 100px;
+    border: 1.5px solid rgba(244, 239, 230, 0.12);
+    background: transparent; color: rgba(244, 239, 230, 0.45);
+    font-size: 12px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  }
+  .size-btn.active {
+    border-color: var(--gold-soft);
+    color: var(--cream);
+    background: rgba(160, 120, 64, 0.15);
+  }
+
+  /* AGE INPUT */
+  .age-row { margin-bottom: 36px; }
+  .age-input-wrap {
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 12px;
+  }
+  .age-input {
+    width: 120px; padding: 16px 20px;
+    background: rgba(244, 239, 230, 0.07);
+    border: 1.5px solid rgba(244, 239, 230, 0.15);
+    border-radius: 14px; color: var(--cream);
+    font-family: 'Fraunces', serif; font-size: 36px;
+    font-weight: 400; letter-spacing: -1px;
+    text-align: center; outline: none;
+    transition: border-color 0.2s;
+  }
+  .age-input:focus { border-color: var(--gold); }
+  .age-input::placeholder { color: rgba(244, 239, 230, 0.2); }
+  .age-unit {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 18px; color: rgba(244, 239, 230, 0.4);
+  }
+
+  /* CALCULATE BTN */
+  .calc-btn {
+    width: 100%; padding: 18px;
+    background: var(--gold); color: var(--cream);
+    border: none; border-radius: 14px;
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .calc-btn:hover { transform: translateY(-1px); background: var(--gold-soft); }
+
+  /* RESULT */
+  .result-box {
+    margin-top: 28px;
+    background: rgba(160, 120, 64, 0.12);
+    border: 1.5px solid rgba(160, 120, 64, 0.3);
+    border-radius: 18px; padding: 32px;
+    display: none;
+    animation: fadeIn 0.35s ease;
+  }
+  .result-box.show { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-num {
+    font-family: 'Fraunces', serif;
+    font-size: 80px; font-weight: 400;
+    letter-spacing: -3px; line-height: 1;
+    color: var(--cream);
+  }
+  .result-unit {
+    font-size: 14px; color: var(--gold-soft);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-top: 6px; margin-bottom: 16px;
+  }
+  .result-stage {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 20px; color: rgba(244, 239, 230, 0.7);
+    line-height: 1.4;
+  }
+
+  /* CONTENT */
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 500;
+    letter-spacing: -0.5px; margin-top: 56px; margin-bottom: 18px;
+  }
+  p {
+    font-size: 17px; line-height: 1.75;
+    color: #3A3530; font-weight: 300; margin-bottom: 22px;
+  }
+
+  .info-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin: 32px 0;
+  }
+  .info-card {
+    background: var(--cream-2); border-radius: 18px; padding: 28px;
+  }
+  .info-card .num {
+    font-family: 'Fraunces', serif; font-size: 48px;
+    font-weight: 400; letter-spacing: -1px; color: var(--gold);
+    line-height: 1;
+  }
+  .info-card .label {
+    font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5;
+  }
+
+  /* CTA */
+  .cta-box {
+    background: var(--ink); border-radius: 20px;
+    padding: 40px; margin: 56px 0; text-align: center;
+  }
+  .cta-box h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px; font-weight: 400; color: #F4EFE6; margin-bottom: 12px;
+  }
+  .cta-box p { color: rgba(244, 239, 230, 0.5); font-size: 15px; margin-bottom: 24px; }
+  .cta-btn {
+    display: inline-block; background: var(--gold); color: #F4EFE6;
+    padding: 14px 28px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    text-decoration: none; text-transform: uppercase;
+  }
+
+  footer {
+    padding: 40px 0; border-top: 1px solid rgba(24, 22, 15, 0.08);
+    text-align: center; font-size: 13px; color: var(--muted);
+  }
+  footer a { color: var(--gold); text-decoration: none; margin: 0 12px; }
+
+  @media (max-width: 600px) {
+    .calc-card { padding: 28px 24px; }
+    .info-grid { grid-template-columns: 1fr; }
+    h1 { letter-spacing: -1px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="logo">Anivo</a>
+    <a href="/" class="nav-link">← Back</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="container">
+    <div class="page-inner">
+
+      <div class="eyebrow">Free Tool</div>
+      <h1>Pet Age<br><em>Calculator</em></h1>
+      <p class="intro">How old is your dog or cat in human years? Enter their age below for an accurate answer — plus what life stage they're in right now.</p>
+
+      <!-- CALCULATOR -->
+      <div class="calc-card">
+
+        <div class="calc-label">Step 1 — What kind of companion?</div>
+        <div class="toggle-row">
+          <button class="toggle-btn active" onclick="setType('dog')">🐶 Dog</button>
+          <button class="toggle-btn" onclick="setType('cat')">🐱 Cat</button>
+        </div>
+
+        <div id="size-section">
+          <div class="calc-label">Step 2 — Size</div>
+          <div class="size-row">
+            <button class="size-btn active" onclick="setSize('small')">Small <span style="opacity:.5;font-weight:300">under 20 lbs</span></button>
+            <button class="size-btn" onclick="setSize('medium')">Medium <span style="opacity:.5;font-weight:300">20–50 lbs</span></button>
+            <button class="size-btn" onclick="setSize('large')">Large <span style="opacity:.5;font-weight:300">50+ lbs</span></button>
+          </div>
+        </div>
+
+        <div class="age-row">
+          <div class="calc-label" id="age-label">Step 3 — Age in years</div>
+          <div class="age-input-wrap">
+            <input type="number" class="age-input" id="age-input" placeholder="3" min="0" max="30">
+            <span class="age-unit">years old</span>
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calculate()">Calculate Human Age →</button>
+
+        <div class="result-box" id="result-box">
+          <div class="result-num" id="result-num">—</div>
+          <div class="result-unit">human years</div>
+          <div class="result-stage" id="result-stage"></div>
+        </div>
+
+      </div>
+
+      <!-- CONTENT -->
+      <h2>Why "1 dog year = 7 human years" is wrong</h2>
+      <p>The 1:7 ratio has been repeated for decades, but it doesn't hold up. Dogs age much faster in their early years and slow down later. A 1-year-old dog is already sexually mature — more like a 15-year-old human than a 7-year-old.</p>
+      <p>Modern calculations use size and breed data. Larger dogs age faster than smaller ones, and the rate of aging changes significantly across a dog's lifespan.</p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="num">15</div>
+          <div class="label">Human years equivalent for a 1-year-old dog — not 7</div>
+        </div>
+        <div class="info-card">
+          <div class="num">2×</div>
+          <div class="label">Large breeds age roughly twice as fast as small breeds in later life</div>
+        </div>
+      </div>
+
+      <h2>How cats age differently</h2>
+      <p>Cats follow a different curve. The first year of a cat's life is equivalent to about 15 human years. By age 2, they're closer to 24. After that, each cat year adds roughly 4 human years — making a 10-year-old cat about 56 in human terms.</p>
+      <p>Most cats are considered "senior" at 11 and "super senior" at 15. With good care, many reach their mid-80s in human equivalent age.</p>
+
+      <h2>What life stage is your pet in?</h2>
+      <p>Knowing your pet's human age equivalent helps you understand what care they need right now. A dog in their "40s" may need joint support. A cat in their "70s" benefits from more frequent vet checkups. Age isn't just a number — it shapes everything from diet to activity levels.</p>
+
+      <div class="cta-box">
+        <h3>The years go fast. Keep them close.</h3>
+        <p>Anivo is a private app to collect memories, photos, and stories of your companion — before they fade.</p>
+        <a href="/" class="cta-btn">Learn about Anivo</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 Anivo ·
+  <a href="/privacy">Privacy</a>
+  <a href="/terms">Terms</a>
+</footer>
+
+<script>
+  let petType = 'dog';
+  let dogSize = 'small';
+
+  function setType(type) {
+    petType = type;
+    document.querySelectorAll('.toggle-btn').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0 && type === 'dog') || (i === 1 && type === 'cat'));
+    });
+    document.getElementById('size-section').style.display = type === 'dog' ? 'block' : 'none';
+    document.getElementById('age-label').textContent = type === 'cat' ? 'Step 2 — Age in years' : 'Step 3 — Age in years';
+    hideResult();
+  }
+
+  function setSize(size) {
+    dogSize = size;
+    document.querySelectorAll('.size-btn').forEach(b => {
+      b.classList.toggle('active', b.textContent.toLowerCase().startsWith(size));
+    });
+    hideResult();
+  }
+
+  function hideResult() {
+    document.getElementById('result-box').classList.remove('show');
+  }
+
+  function calculate() {
+    const age = parseFloat(document.getElementById('age-input').value);
+    if (isNaN(age) || age < 0 || age > 30) {
+      alert('Please enter a valid age (0–30 years).');
+      return;
+    }
+
+    let humanAge, stage;
+
+    if (petType === 'cat') {
+      humanAge = catToHuman(age);
+      stage = catStage(humanAge);
+    } else {
+      humanAge = dogToHuman(age, dogSize);
+      stage = dogStage(humanAge);
+    }
+
+    document.getElementById('result-num').textContent = Math.round(humanAge);
+    document.getElementById('result-stage').textContent = stage;
+    document.getElementById('result-box').classList.add('show');
+  }
+
+  function catToHuman(age) {
+    if (age <= 1) return age * 15;
+    if (age <= 2) return 15 + (age - 1) * 9;
+    return 24 + (age - 2) * 4;
+  }
+
+  function dogToHuman(age, size) {
+    // Size-adjusted multipliers based on veterinary research
+    const tables = {
+      small: [15, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76],
+      medium: [15, 24, 29, 34, 38, 42, 47, 51, 56, 60, 65, 69, 74, 78, 83],
+      large: [15, 24, 30, 36, 41, 47, 53, 58, 64, 70, 76, 82, 88, 94, 100]
+    };
+    const table = tables[size];
+    const idx = Math.min(Math.floor(age), table.length - 1);
+    const frac = age - Math.floor(age);
+    if (idx >= table.length - 1) return table[table.length - 1];
+    return table[idx] + frac * (table[idx + 1] - table[idx]);
+  }
+
+  function dogStage(h) {
+    if (h < 18) return 'A puppy in spirit and in years — full of curiosity and energy.';
+    if (h < 30) return 'Young adult. Active, confident, still learning the world.';
+    if (h < 50) return 'In their prime. Settled, loyal, and fully themselves.';
+    if (h < 65) return 'Middle-aged. A little slower, a lot wiser.';
+    if (h < 80) return 'Senior. Extra gentle with them now — and extra grateful.';
+    return 'Elder. Every day is a gift to hold close.';
+  }
+
+  function catStage(h) {
+    if (h < 18) return 'Kitten stage — boundless energy, learning everything.';
+    if (h < 30) return 'Junior adult. Playful, curious, finding their rhythm.';
+    if (h < 50) return 'Prime years. Confident, territorial, deeply themselves.';
+    if (h < 65) return 'Mature. Slower to startle, quicker to purr.';
+    if (h < 80) return 'Senior cat. Deserves the warmest spots in the house.';
+    return 'Super senior. A life richly lived — treasure every moment.';
+  }
+</script>
+
+</body>
+</html>
