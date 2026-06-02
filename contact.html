@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/jpeg" href="/favicon.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Contact — Anivo</title>
+<meta name="description" content="Get in touch with the Anivo team. We'd love to hear from you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream: #F4EFE6; --cream-2: #EAE4D8; --cream-3: #D4CFC6;
+    --ink: #18160F; --ink-2: #2A2620;
+    --gold: #A07840; --gold-soft: #B89366; --muted: #7A7060;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+    background: rgba(244,239,230,0.78);
+    border-bottom: 1px solid rgba(24,22,15,0.06);
+  }
+  nav .container { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; padding-bottom: 18px; }
+  .logo { font-family: 'Fraunces', serif; font-weight: 600; font-size: 22px; letter-spacing: -0.5px; font-style: italic; text-decoration: none; color: var(--ink); }
+  .logo::after { content: '·'; color: var(--gold); margin-left: 6px; }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a { color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; opacity: 0.7; transition: opacity 0.2s; }
+  .nav-links a:hover { opacity: 1; }
+  .btn-primary { background: var(--gold); color: var(--cream); padding: 11px 22px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: transform 0.2s, background 0.2s; border: none; cursor: pointer; }
+  .btn-primary:hover { transform: translateY(-1px); background: var(--gold-soft); }
+
+  .page-hero { padding: 160px 0 80px; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+  .eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+
+  .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 100px; align-items: start; padding-bottom: 120px; }
+  @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; gap: 60px; } .page-hero { padding: 120px 0 60px; } .nav-links { display: none; } }
+
+  .contact-left h1 { font-family: 'Fraunces', serif; font-size: clamp(36px, 4vw, 56px); font-weight: 400; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 24px; }
+  .contact-left h1 em { font-style: italic; color: var(--gold); font-weight: 300; }
+  .contact-left p { font-size: 16px; line-height: 1.7; color: var(--muted); font-weight: 300; margin-bottom: 48px; }
+
+  .contact-detail { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+  .contact-detail-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(160,120,64,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+  .contact-detail-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+  .contact-detail-value { font-size: 14px; color: var(--ink); font-weight: 400; }
+
+  .contact-form { background: white; border-radius: 24px; padding: 48px; border: 1px solid rgba(24,22,15,0.06); box-shadow: 0 20px 60px rgba(24,22,15,0.06); }
+  .form-group { margin-bottom: 24px; }
+  .form-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  .form-input { width: 100%; padding: 14px 18px; border: 1.5px solid rgba(24,22,15,0.1); border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 15px; color: var(--ink); background: var(--cream); transition: border-color 0.2s; outline: none; }
+  .form-input:focus { border-color: var(--gold); background: white; }
+  textarea.form-input { resize: vertical; min-height: 140px; line-height: 1.6; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+
+  .form-submit { width: 100%; padding: 16px; background: var(--ink); color: var(--cream); border: none; border-radius: 14px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: transform 0.2s, background 0.2s; margin-top: 8px; }
+  .form-submit:hover { transform: translateY(-1px); background: var(--ink-2); }
+  .form-submit:active { transform: translateY(0); }
+  .form-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 16px; line-height: 1.5; }
+
+  .success-msg { display: none; text-align: center; padding: 40px 20px; }
+  .success-msg .success-icon { font-size: 48px; margin-bottom: 16px; }
+  .success-msg h3 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
+  .success-msg p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  footer { background: var(--ink); padding: 64px 0 40px; }
+  .footer-grid { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 40px; margin-bottom: 48px; }
+  @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+  .footer-logo { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: var(--cream); font-style: italic; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .footer-logo::after { content: '·'; color: var(--gold); margin-left: 6px; }
+  .footer-tagline { font-size: 13px; color: rgba(244,239,230,0.35); font-weight: 300; line-height: 1.6; }
+  .footer-col h4 { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; color: rgba(244,239,230,0.35); text-transform: uppercase; margin-bottom: 16px; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(244,239,230,0.6); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--cream); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 32px; border-top: 1px solid rgba(244,239,230,0.06); font-size: 12px; color: rgba(244,239,230,0.2); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="logo">Anivo</a>
+    <div class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/contact" style="opacity:1; color: var(--gold);">Contact</a>
+    </div>
+    <a href="/#download" class="btn-primary">Download</a>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="eyebrow">Contact</div>
+    <div class="contact-grid">
+      <div class="contact-left">
+        <h1>We'd love to <em>hear from you.</em></h1>
+        <p>Whether you have a question, a suggestion, or just want to share a memory — we're here. Anivo is built by two people who care deeply about this, and every message gets a real response.</p>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">✉️</div>
+          <div>
+            <div class="contact-detail-label">Email</div>
+            <div class="contact-detail-value">e.sisik@live.com</div>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">⏱</div>
+          <div>
+            <div class="contact-detail-label">Response time</div>
+            <div class="contact-detail-value">Usually within 24 hours</div>
+          </div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📍</div>
+          <div>
+            <div class="contact-detail-label">Based in</div>
+            <div class="contact-detail-value">Samsun, Turkey</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="contact-form" id="contact-form-wrap">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="name">Name</label>
+              <input type="text" id="name" name="name" class="form-input" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" class="form-input" placeholder="What's on your mind?">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">Message</label>
+            <textarea id="message" name="message" class="form-input" placeholder="Tell us anything..." required></textarea>
+          </div>
+          <button type="button" class="form-submit" onclick="handleSubmit()">Send message</button>
+          <p class="form-note">We read every message. No bots, no templates.</p>
+        </div>
+
+        <div class="success-msg" id="success-msg">
+          <div class="success-icon">🌿</div>
+          <h3>Message received.</h3>
+          <p>Thank you for reaching out. We'll get back to you within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Anivo</div>
+        <p class="footer-tagline">A keepsake for those who stay in our hearts.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="/#features">Features</a>
+        <a href="/#pricing">Pricing</a>
+        <a href="/#download">Download</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="/blog-pet-loss">Pet Loss Guide</a>
+        <a href="/blog-pet-memorial-ideas">Memorial Ideas</a>
+        <a href="/rainbow-bridge-poem">Rainbow Bridge Poem</a>
+        <a href="/pet-age-calculator">Pet Age Calculator</a>
+      </div>
+      <div class="footer-col">
+        <h4>Pet Cemeteries</h4>
+        <a href="/pet-cemeteries-new-york">New York</a>
+        <a href="/pet-cemeteries-los-angeles">Los Angeles</a>
+        <a href="/pet-cemeteries-london">London</a>
+        <a href="/pet-cemeteries-chicago">Chicago</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/contact">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Anivo. Made with care.</div>
+      <div>anivo.app</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+async function handleSubmit() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  if (!name || !email || !message) {
+    alert('Please fill in the required fields.');
+    return;
+  }
+
+  const btn = document.querySelector('.form-submit');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://formspree.io/f/xdkobqwr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        subject: document.getElementById('subject').value,
+        message: document.getElementById('message').value,
+      })
+    });
+
+    if (res.ok) {
+      document.getElementById('contact-form-wrap').style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    } else {
+      throw new Error();
+    }
+  } catch {
+    btn.textContent = 'Send message';
+    btn.disabled = false;
+    alert('Something went wrong. Please email us directly at e.sisik@live.com');
+  }
+}
+</script>
+</body>
+</html>
