@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/jpeg" href="/favicon.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Wander a 3D memorial world — a peaceful dusk land of hills, trees and quiet water where beloved pets rest under soft lanterns. Orbit, explore, light a candle.">
+<title>The Memorial World (3D) — Anivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root { --cream:#F4EFE6; --ink:#18160F; --ink-2:#2A2620; --cream-2:#EAE4D8; --cream-3:#D4CFC6; --gold:#C6A15B; }
+  html,body { height:100%; }
+  body { font-family:'Inter',sans-serif; background:#0d1018; color:var(--cream); overflow:hidden; -webkit-font-smoothing:antialiased; }
+  canvas { display:block; }
+
+  .bar { position:fixed; top:0; left:0; right:0; z-index:40; display:flex; align-items:center; justify-content:space-between; padding:18px 26px; background:linear-gradient(180deg, rgba(8,10,16,0.5), transparent); }
+  .logo { font-family:'Fraunces',serif; font-weight:600; font-size:22px; font-style:italic; color:#fff; text-decoration:none; }
+  .logo::after { content:'·'; color:var(--gold); margin-left:6px; }
+  .pill { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.85); background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.14); padding:9px 16px; border-radius:100px; text-decoration:none; cursor:pointer; }
+  .pill.solid { background:var(--gold); color:#2a2110; border-color:transparent; }
+
+  .hint { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:35; color:rgba(255,255,255,0.85); font-size:11px; letter-spacing:2px; text-transform:uppercase; background:rgba(8,10,16,0.4); padding:10px 18px; border-radius:100px; backdrop-filter:blur(6px); transition:opacity .6s; }
+
+  #tip { position:fixed; z-index:36; pointer-events:none; font-family:'Fraunces',serif; font-style:italic; font-size:16px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.6); opacity:0; transition:opacity .15s; transform:translate(-50%,-140%); white-space:nowrap; }
+  #tip small { display:block; font-family:'Inter'; font-style:normal; font-size:10px; letter-spacing:1px; color:rgba(255,255,255,0.7); text-align:center; }
+
+  .veil { position:fixed; inset:0; z-index:60; background:radial-gradient(120% 90% at 50% 40%, #2b2740, #0d1018); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; transition:opacity 1s ease, visibility 1s; }
+  .veil.gone { opacity:0; visibility:hidden; }
+  .veil .eyebrow { font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
+  .veil h1 { font-family:'Fraunces',serif; font-weight:400; font-size:clamp(40px,7vw,78px); line-height:1.02; letter-spacing:-2px; margin-bottom:22px; }
+  .veil h1 em { font-style:italic; color:var(--gold); font-weight:300; }
+  .veil p { color:rgba(244,239,230,0.7); font-weight:300; max-width:460px; margin:0 auto 34px; line-height:1.7; font-size:17px; }
+  .enter { background:var(--gold); color:#2a2110; border:none; cursor:pointer; padding:16px 34px; border-radius:100px; font-family:'Inter'; font-size:12px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; transition:transform .2s; }
+  .enter:hover { transform:translateY(-2px); }
+  .veil-arc { position:absolute; bottom:-30%; left:50%; transform:translateX(-50%); width:900px; height:900px; max-width:150vw; border-radius:50%;
+    background:conic-gradient(from 180deg at 50% 50%, transparent 0deg,#B3A6C6 8deg,#9DB6C9 16deg,#A9C6A8 24deg,#D9CE9A 32deg,#E4C29A 40deg,#D9A6A0 48deg,transparent 56deg);
+    -webkit-mask:radial-gradient(circle, transparent 62%, #000 62.4%, #000 70%, transparent 70.4%);
+            mask:radial-gradient(circle, transparent 62%, #000 62.4%, #000 70%, transparent 70.4%);
+    opacity:.4; filter:blur(2px); pointer-events:none; }
+  .loading { position:fixed; inset:0; z-index:70; background:#0d1018; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.6); font-size:13px; letter-spacing:2px; text-transform:uppercase; transition:opacity .6s; }
+
+  .modal-bg { position:fixed; inset:0; z-index:80; background:rgba(8,10,16,0.6); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; padding:24px; }
+  .modal-bg.open { display:flex; }
+  .modal { position:relative; background:var(--cream); color:var(--ink); width:100%; max-width:420px; border-radius:26px; overflow:hidden; box-shadow:0 40px 90px -30px rgba(0,0,0,0.6); }
+  .modal .top { padding:34px 30px 26px; text-align:center; background:linear-gradient(150deg,#EBD9C7,#D9B99A); }
+  .modal .top .pet { font-size:68px; }
+  .modal .top h3 { font-family:'Fraunces',serif; font-weight:400; font-size:34px; letter-spacing:-1px; margin-top:6px; }
+  .modal .top .yrs { font-family:'Fraunces'; font-style:italic; color:#6b5636; font-size:15px; margin-top:4px; }
+  .modal .mid { padding:26px 30px; }
+  .modal .mid p { font-family:'Fraunces',serif; font-style:italic; font-size:17px; line-height:1.65; color:var(--ink-2); font-weight:300; text-align:center; }
+  .modal .stats { display:flex; justify-content:center; gap:8px; margin-top:22px; }
+  .modal .stats button { background:#18160F; color:var(--cream); border:none; cursor:pointer; padding:12px 20px; border-radius:100px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+  .modal .stats button.ghost { background:transparent; color:var(--ink-2); border:1px solid var(--cream-3); }
+  .modal .visit { display:block; text-align:center; padding:16px; background:var(--cream-2); color:var(--ink-2); text-decoration:none; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+  .modal .close { position:absolute; top:18px; right:20px; z-index:2; background:rgba(0,0,0,0.35); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; }
+  .mock-badge { position:fixed; bottom:16px; right:16px; z-index:45; background:rgba(8,10,16,0.6); color:#fff; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:8px 14px; border-radius:100px; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="/" class="logo">Anivo</a>
+  <a class="pill solid">Create a Memorial</a>
+</div>
+
+<div class="loading" id="loading">Preparing the world…</div>
+
+<div class="veil" id="veil">
+  <div class="veil-arc"></div>
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow">The Rainbow Bridge</div>
+    <h1>A world where they<br><em>wait for us</em></h1>
+    <p>Cross the bridge into a quiet land at dusk. Orbit the world, drift between the lanterns, and light a candle for someone you love.</p>
+    <button class="enter" id="enter">Enter the world →</button>
+  </div>
+</div>
+
+<div id="tip"></div>
+<div class="hint" id="hint">Drag to orbit · scroll to zoom · click a lantern</div>
+
+<div class="modal-bg" id="modalbg">
+  <div class="modal">
+    <button class="close" id="mclose">×</button>
+    <div class="top"><div class="pet" id="m-pet">🐈</div><h3 id="m-name">Luna</h3><div class="yrs" id="m-yrs">2011 – 2024</div></div>
+    <div class="mid">
+      <p id="m-ep">“The quiet warmth at the foot of every bed.”</p>
+      <div class="stats">
+        <button id="m-candle">🕯 Light a candle · <span id="m-cc">342</span></button>
+        <button class="ghost">🌸 Flower</button>
+      </div>
+    </div>
+    <a href="/memorial-luna" class="visit">Visit the full memorial →</a>
+  </div>
+</div>
+
+<div class="mock-badge">Mockup · 3D world</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const PETS = [
+  { pet:'🐈', name:'Luna',  yrs:'2011 – 2024', ep:'“The quiet warmth at the foot of every bed.”', cc:342 },
+  { pet:'🐕', name:'Max',   yrs:'2009 – 2023', ep:'“He met us at the door for fourteen years.”', cc:511 },
+  { pet:'🐇', name:'Coco',  yrs:'2018 – 2024', ep:'“Small paws, enormous heart.”', cc:96 },
+  { pet:'🐕', name:'Bella', yrs:'2012 – 2024', ep:'“Every walk was an adventure with her.”', cc:388 },
+  { pet:'🐦', name:'Kiwi',  yrs:'2007 – 2023', ep:'“Still hear her good-mornings sometimes.”', cc:132 },
+  { pet:'🐈', name:'Simba', yrs:'2013 – 2025', ep:'“King of the windowsill, and of our hearts.”', cc:274 },
+  { pet:'🐩', name:'Pamuk', yrs:'2014 – 2024', ep:'“Soft as the name we gave her.”', cc:143 },
+  { pet:'🐈', name:'Mısır', yrs:'2015 – 2025', ep:'“Found us on a rainy street. Stayed forever.”', cc:167 },
+  { pet:'🐕', name:'Rocky', yrs:'2010 – 2022', ep:'“Bravest soul in the smallest fears.”', cc:205 },
+  { pet:'🐢', name:'Kaplan',yrs:'2001 – 2024', ep:'“Slow, steady, endlessly loved.”', cc:88 },
+];
+
+let scene, camera, renderer, controls, raycaster, mouse, clock;
+const lanterns = [];      // {group, orb, light, base, pet}
+const clickable = [];     // orb meshes
+let hovered = null;
+
+function terrainH(x, z){
+  return Math.sin(x*0.14)*1.3 + Math.cos(z*0.12)*1.2 + Math.sin((x+z)*0.06)*1.7 - 0.0;
+}
+const WATER_Z = 26; // beyond this z = lake
+
+function gradientTexture(stops){
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256;
+  const g = c.getContext('2d').createLinearGradient(0,0,0,256);
+  stops.forEach(s => g.addColorStop(s[0], s[1]));
+  const ctx = c.getContext('2d'); ctx.fillStyle = g; ctx.fillRect(0,0,4,256);
+  const t = new THREE.CanvasTexture(c); t.needsUpdate = true; return t;
+}
+
+function init(){
+  scene = new THREE.Scene();
+  scene.background = gradientTexture([[0,'#20223a'],[0.45,'#4a3f57'],[0.72,'#8a6a63'],[1,'#c79a63']]);
+  scene.fog = new THREE.Fog(0x6a5a63, 40, 130);
+
+  camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 400);
+  camera.position.set(0, 14, 40);
+
+  renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = false;
+  document.body.appendChild(renderer.domElement);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.06;
+  controls.target.set(0, 3, 0);
+  controls.minDistance = 12; controls.maxDistance = 80;
+  controls.maxPolarAngle = Math.PI * 0.49; // stay above ground
+  controls.autoRotate = true; controls.autoRotateSpeed = 0.35;
+
+  // ---- lights ----
+  scene.add(new THREE.HemisphereLight(0xbfc6e6, 0x2a3320, 0.55));
+  const amb = new THREE.AmbientLight(0x554b58, 0.5); scene.add(amb);
+  const sun = new THREE.DirectionalLight(0xffcf9a, 1.15);
+  sun.position.set(-40, 22, -30); scene.add(sun);
+  const rim = new THREE.DirectionalLight(0x8899cc, 0.35);
+  rim.position.set(30, 18, 30); scene.add(rim);
+
+  buildGround();
+  buildWater();
+  scatterTrees();
+  buildLanterns();
+  buildFireflies();
+  buildStars();
+  buildRainbow();
+
+  raycaster = new THREE.Raycaster(); mouse = new THREE.Vector2(); clock = new THREE.Clock();
+
+  addEventListener('resize', onResize);
+  renderer.domElement.addEventListener('pointermove', onMove);
+  renderer.domElement.addEventListener('click', onClick);
+
+  document.getElementById('loading').style.opacity = '0';
+  setTimeout(()=> document.getElementById('loading').style.display='none', 600);
+  animate();
+}
+
+function buildGround(){
+  const size = 200, seg = 120;
+  const geo = new THREE.PlaneGeometry(size, size, seg, seg);
+  geo.rotateX(-Math.PI/2);
+  const pos = geo.attributes.position;
+  for (let i=0;i<pos.count;i++){
+    const x = pos.getX(i), z = pos.getZ(i);
+    let y = terrainH(x, z);
+    if (z > WATER_Z) y = Math.min(y, -1.2) - (z-WATER_Z)*0.05; // dip into lake bed
+    pos.setY(i, y);
+  }
+  geo.computeVertexNormals();
+  const mat = new THREE.MeshStandardMaterial({ color:0x3e5233, roughness:1, metalness:0, flatShading:true });
+  const ground = new THREE.Mesh(geo, mat); scene.add(ground);
+  // darker soil rim under water handled by water plane
+}
+
+function buildWater(){
+  const geo = new THREE.PlaneGeometry(200, 120, 1, 1); geo.rotateX(-Math.PI/2);
+  const mat = new THREE.MeshStandardMaterial({ color:0x27324e, roughness:0.15, metalness:0.6, transparent:true, opacity:0.9 });
+  const water = new THREE.Mesh(geo, mat);
+  water.position.set(0, -0.6, WATER_Z + 60);
+  scene.add(water);
+}
+
+function makeTree(){
+  const g = new THREE.Group();
+  const pine = Math.random() > 0.5;
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.4,2.2,6),
+    new THREE.MeshStandardMaterial({color:0x3a2e2a, roughness:1, flatShading:true}));
+  trunk.position.y = 1.1; g.add(trunk);
+  if (pine){
+    for (let k=0;k<3;k++){
+      const c = new THREE.Mesh(new THREE.ConeGeometry(2.1-k*0.5, 2.4, 7),
+        new THREE.MeshStandardMaterial({color:0x33512f, roughness:1, flatShading:true}));
+      c.position.y = 2.4 + k*1.4; g.add(c);
+    }
+  } else {
+    const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(2.1, 0),
+      new THREE.MeshStandardMaterial({color:0x466b3f, roughness:1, flatShading:true}));
+    crown.position.y = 3.4; crown.scale.set(1,1.15,1); g.add(crown);
+  }
+  return g;
+}
+function scatterTrees(){
+  for (let i=0;i<70;i++){
+    const x = (Math.random()-0.5)*150;
+    const z = -40 + Math.random()*60; // keep on land side
+    if (z > WATER_Z-4) continue;
+    if (Math.abs(x) < 6 && Math.abs(z) < 6) continue;
+    const t = makeTree();
+    const s = 0.7 + Math.random()*0.9; t.scale.setScalar(s);
+    t.position.set(x, terrainH(x,z)-0.2, z);
+    t.rotation.y = Math.random()*Math.PI;
+    scene.add(t);
+  }
+}
+
+function buildLanterns(){
+  const spots = [];
+  // arrange lanterns in a loose scatter across the land
+  for (let i=0;i<PETS.length;i++){
+    const ang = (i/PETS.length)*Math.PI*2;
+    const rad = 10 + (i%3)*7 + Math.random()*3;
+    let x = Math.cos(ang)*rad;
+    let z = Math.sin(ang)*rad*0.7 - 4;
+    z = Math.min(z, WATER_Z-3);
+    spots.push([x, z]);
+  }
+  PETS.forEach((pet, i) => {
+    const [x, z] = spots[i];
+    const y = terrainH(x, z);
+    const g = new THREE.Group(); g.position.set(x, y, z);
+    // stone base
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.9,1.1,0.5,6),
+      new THREE.MeshStandardMaterial({color:0x6a6360, roughness:1, flatShading:true}));
+    base.position.y = 0.25; g.add(base);
+    // post
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,1.6,6),
+      new THREE.MeshStandardMaterial({color:0x2a2233, roughness:1}));
+    post.position.y = 1.3; g.add(post);
+    // lantern orb (glowing)
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16),
+      new THREE.MeshBasicMaterial({color:0xffd98a}));
+    orb.position.y = 2.2; g.add(orb);
+    orb.userData.pet = pet; orb.userData.group = g; clickable.push(orb);
+    // halo
+    const halo = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 16),
+      new THREE.MeshBasicMaterial({color:0xffcf7a, transparent:true, opacity:0.18, blending:THREE.AdditiveBlending, depthWrite:false}));
+    halo.position.y = 2.2; g.add(halo);
+    // warm point light
+    const light = new THREE.PointLight(0xffb060, 1.4, 16, 2); light.position.y = 2.2; g.add(light);
+    scene.add(g);
+    lanterns.push({ group:g, orb, halo, light, base:y, phase:Math.random()*6.28 });
+  });
+}
+
+function buildFireflies(){
+  const n = 300, geo = new THREE.BufferGeometry(), arr = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    arr[i*3]   = (Math.random()-0.5)*120;
+    arr[i*3+1] = 1 + Math.random()*10;
+    arr[i*3+2] = -40 + Math.random()*70;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(arr,3));
+  const mat = new THREE.PointsMaterial({ color:0xffe6a6, size:0.22, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false });
+  const pts = new THREE.Points(geo, mat); pts.userData.base = arr.slice(); scene.add(pts); window._flies = pts;
+}
+
+function buildStars(){
+  const n = 400, geo = new THREE.BufferGeometry(), arr = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    const r = 160, th = Math.random()*Math.PI*2, ph = Math.random()*Math.PI*0.4;
+    arr[i*3]   = Math.cos(th)*Math.sin(ph)*r;
+    arr[i*3+1] = 40 + Math.cos(ph)*r*0.5;
+    arr[i*3+2] = Math.sin(th)*Math.sin(ph)*r;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(arr,3));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0xffffff, size:0.5, transparent:true, opacity:0.7})));
+}
+
+function buildRainbow(){
+  const geo = new THREE.TorusGeometry(46, 0.7, 8, 80, Math.PI);
+  const mat = new THREE.MeshBasicMaterial({ vertexColors:true, transparent:true, opacity:0.22, depthWrite:false });
+  const cols = [];
+  const pos = geo.attributes.position; const rain = [0xB3A6C6,0x9DB6C9,0xA9C6A8,0xD9CE9A,0xE4C29A,0xD9A6A0];
+  for (let i=0;i<pos.count;i++){
+    const a = Math.atan2(pos.getY(i), pos.getX(i)); const t = a/Math.PI; const c = new THREE.Color(rain[Math.floor(t*(rain.length-1))||0]);
+    cols.push(c.r,c.g,c.b);
+  }
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(cols,3));
+  const arc = new THREE.Mesh(geo, mat); arc.position.set(-10, -6, -55); scene.add(arc);
+}
+
+function onResize(){ camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); }
+
+function onMove(e){
+  mouse.x = (e.clientX/innerWidth)*2 - 1; mouse.y = -(e.clientY/innerHeight)*2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hit = raycaster.intersectObjects(clickable)[0];
+  const tip = document.getElementById('tip');
+  if (hit){ hovered = hit.object; document.body.style.cursor='pointer';
+    const p = hovered.userData.pet; tip.innerHTML = p.name + '<small>'+p.yrs+'</small>';
+    tip.style.left = e.clientX+'px'; tip.style.top = e.clientY+'px'; tip.style.opacity='1';
+  } else { hovered=null; document.body.style.cursor='grab'; tip.style.opacity='0'; }
+}
+
+function onClick(){
+  if (!hovered) return;
+  const p = hovered.userData.pet;
+  document.getElementById('m-pet').textContent = p.pet;
+  document.getElementById('m-name').textContent = p.name;
+  document.getElementById('m-yrs').textContent = p.yrs;
+  document.getElementById('m-ep').textContent = p.ep;
+  document.getElementById('m-cc').textContent = p.cc;
+  document.getElementById('modalbg').classList.add('open');
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  lanterns.forEach((l,i) => {
+    const bob = Math.sin(t*1.3 + l.phase)*0.12;
+    l.orb.position.y = 2.2 + bob; l.halo.position.y = 2.2 + bob; l.light.position.y = 2.2 + bob;
+    const pulse = 0.9 + Math.sin(t*2 + l.phase)*0.25;
+    l.light.intensity = 1.3*pulse; l.halo.material.opacity = 0.14*pulse + 0.08;
+    l.orb.scale.setScalar(hovered && hovered===l.orb ? 1.25 : 1);
+  });
+  // fireflies drift
+  const f = window._flies; if (f){ const pa=f.geometry.attributes.position, b=f.userData.base;
+    for (let i=0;i<pa.count;i++){ pa.setY(i, b[i*3+1] + Math.sin(t*0.6 + i)*0.5); pa.setX(i, b[i*3] + Math.cos(t*0.3 + i)*0.4); }
+    pa.needsUpdate = true; }
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ui
+document.getElementById('enter').addEventListener('click', ()=>{
+  document.getElementById('veil').classList.add('gone');
+});
+document.getElementById('mclose').addEventListener('click', ()=> document.getElementById('modalbg').classList.remove('open'));
+document.getElementById('modalbg').addEventListener('click', e=>{ if(e.target.id==='modalbg') e.currentTarget.classList.remove('open'); });
+const mc=document.getElementById('m-candle'), mcc=document.getElementById('m-cc');
+mc.addEventListener('click', ()=>{ mcc.textContent = parseInt(mcc.textContent,10)+1; mc.style.background='#C6A15B'; });
+setTimeout(()=>{ const h=document.getElementById('hint'); if(h) h.style.opacity='0'; }, 7000);
+
+if (window.THREE && THREE.OrbitControls) init();
+else document.getElementById('loading').textContent = '3D failed to load — open over http (Vercel preview) not file://';
+</script>
+</body>
+</html>
