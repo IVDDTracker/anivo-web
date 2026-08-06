@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/jpeg" href="/favicon.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Wander the Anivo Memorial World — a peaceful land of forests, meadows and quiet shores where beloved pets rest. Walk to a lantern and light a candle.">
+<title>The Memorial World — Anivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream: #F4EFE6; --ink: #18160F; --gold: #C6A15B; --muted: #9a9186;
+  }
+  html, body { height: 100%; }
+  body { font-family: 'Inter', sans-serif; background: #10131b; color: var(--cream); overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+  /* ---- top bar ---- */
+  .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 60; display: flex; align-items: center; justify-content: space-between; padding: 18px 26px; background: linear-gradient(180deg, rgba(8,10,16,0.55), transparent); }
+  .logo { font-family: 'Fraunces', serif; font-weight: 600; font-size: 22px; font-style: italic; color: #fff; text-decoration: none; }
+  .logo::after { content: '·'; color: var(--gold); margin-left: 6px; }
+  .bar .right { display: flex; gap: 10px; align-items: center; }
+  .pill { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.14); padding: 9px 16px; border-radius: 100px; text-decoration: none; cursor: pointer; transition: background .2s; }
+  .pill:hover { background: rgba(255,255,255,0.18); }
+  .pill.solid { background: var(--gold); color: #2a2110; border-color: transparent; }
+
+  /* ---- world viewport ---- */
+  #world { position: fixed; inset: 0; overflow-x: auto; overflow-y: hidden; cursor: grab; scrollbar-width: none; }
+  #world::-webkit-scrollbar { display: none; }
+  #world.drag { cursor: grabbing; }
+  #track { position: relative; width: 360vw; height: 100%; min-height: 100%; }
+
+  /* sky gradient: dusk journey — warm gold (left) → lavender → deep night (right) */
+  .sky { position: absolute; inset: 0; background:
+    linear-gradient(180deg, #2b2740 0%, #4a3f57 40%, #7a5f63 72%, #b98a63 100%),
+    linear-gradient(90deg, #caa06a 0%, #8a6f86 40%, #4a4368 72%, #1c2036 100%);
+    background-blend-mode: soft-light, normal; }
+  /* sun/moon */
+  .orb { position: absolute; top: 16%; left: 12vw; width: 150px; height: 150px; border-radius: 50%;
+    background: radial-gradient(circle, #ffe9c2, #f4c988 55%, rgba(244,201,136,0) 72%);
+    filter: blur(1px); }
+  .moon { position: absolute; top: 12%; left: 300vw; width: 90px; height: 90px; border-radius: 50%;
+    background: radial-gradient(circle at 60% 40%, #eef1ff, #c8cbe6 60%, rgba(200,203,230,0) 74%); }
+  .stars { position: absolute; inset: 0; }
+  .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: .0; animation: tw 4s ease-in-out infinite; }
+  @keyframes tw { 0%,100%{opacity:.1} 50%{opacity:.8} }
+
+  /* parallax layers */
+  .layer { position: absolute; bottom: 0; left: 0; height: 100%; width: 360vw; will-change: transform; pointer-events: none; }
+  .layer.pe { pointer-events: auto; }
+
+  /* far hills */
+  .hills { bottom: 26%; }
+  .hill { position: absolute; bottom: 0; border-radius: 50% 50% 0 0; background: #3c3a52; opacity: .55; filter: blur(1px); }
+
+  /* mist band */
+  .mist { position: absolute; bottom: 24%; left: 0; width: 360vw; height: 120px; background: linear-gradient(180deg, transparent, rgba(230,220,235,0.18) 60%, transparent); filter: blur(6px); }
+
+  /* mid forest */
+  .forest { bottom: 20%; }
+  .tree { position: absolute; bottom: 0; }
+  .tree .trunk { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 10px; height: 46px; background: #2a2233; border-radius: 3px; }
+  .tree .crown { width: 90px; height: 110px; border-radius: 50% 50% 46% 46%; background: radial-gradient(circle at 40% 35%, #4a6b4f, #33513a 70%); box-shadow: inset -10px -14px 20px rgba(0,0,0,0.25); }
+  .tree.pine .crown { width: 0; height: 0; background: none; border-left: 42px solid transparent; border-right: 42px solid transparent; border-bottom: 120px solid #35533c; border-radius: 0; box-shadow: none; }
+
+  /* ground / meadow */
+  .ground { bottom: 0; height: 30%; background: linear-gradient(180deg, #33472f 0%, #26361f 100%); box-shadow: 0 -6px 30px rgba(0,0,0,0.25); }
+  .ground::before { content:''; position:absolute; top:-1px; left:0; width:360vw; height:40px; background: radial-gradient(120px 30px at 50% 0, rgba(120,150,90,0.35), transparent 70%); }
+  .blade { position: absolute; bottom: 26%; width: 3px; height: 22px; background: linear-gradient(#4d6b3c, #35502c); border-radius: 3px 3px 0 0; transform-origin: bottom; animation: sway 5s ease-in-out infinite; opacity:.8; }
+  @keyframes sway { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(5deg)} }
+  .flower { position:absolute; bottom:27%; font-size:14px; opacity:.9; }
+
+  /* lake / seaside on the right portion */
+  .lake { position: absolute; bottom: 0; left: 250vw; width: 110vw; height: 30%;
+    background: linear-gradient(180deg, #2c3550, #141a2c); }
+  .lake::after { content:''; position:absolute; inset:0; background: repeating-linear-gradient(180deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 10px); opacity:.5; }
+  .shore { position:absolute; bottom:29%; left:236vw; width: 30vw; height: 40px; background: radial-gradient(60% 100% at 50% 0, rgba(200,170,120,0.5), transparent 70%); }
+
+  /* fireflies / motes */
+  .flies { position: absolute; inset: 0; }
+  .fly { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #ffe6a6; box-shadow: 0 0 10px 3px rgba(255,214,120,0.7); animation: float 7s ease-in-out infinite; opacity:.0; }
+  @keyframes float { 0%{transform:translate(0,0); opacity:0} 20%{opacity:.9} 50%{transform:translate(20px,-26px)} 80%{opacity:.8} 100%{transform:translate(-10px,-50px); opacity:0} }
+
+  /* ---- memorial lanterns ---- */
+  .spot { position: absolute; transform: translateX(-50%); cursor: pointer; text-align: center; pointer-events: auto; }
+  .lantern { position: relative; width: 46px; height: 60px; margin: 0 auto; }
+  .lantern .glow { position: absolute; inset: -26px; border-radius: 50%; background: radial-gradient(circle, rgba(255,206,120,0.55), transparent 65%); animation: pulse 3.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(.85); opacity:.7} 50%{transform:scale(1.1); opacity:1} }
+  .lantern .body { position: absolute; left:50%; top:8px; transform:translateX(-50%); width: 28px; height: 40px; border-radius: 10px; background: linear-gradient(180deg, #ffd98a, #e39b4e); box-shadow: 0 0 18px rgba(255,190,110,0.8), inset 0 -6px 10px rgba(120,60,20,0.3); }
+  .lantern .cap { position:absolute; left:50%; top:2px; transform:translateX(-50%); width: 20px; height: 8px; background:#2a2233; border-radius: 4px 4px 2px 2px; }
+  .lantern .pet { position: relative; z-index: 2; font-size: 20px; line-height: 56px; }
+  .spot .name { margin-top: 8px; font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); opacity: 0; transform: translateY(6px); transition: .25s; }
+  .spot .yrs { font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.7); opacity:0; transition:.25s; }
+  .spot:hover .name, .spot:hover .yrs { opacity: 1; transform: translateY(0); }
+  .spot:hover .lantern { animation: bob .6s ease; }
+  @keyframes bob { 50%{ transform: translateY(-6px);} }
+
+  /* scroll hint */
+  .hint { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 55; display:flex; align-items:center; gap:10px; color: rgba(255,255,255,0.8); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; background: rgba(8,10,16,0.4); padding: 10px 18px; border-radius: 100px; backdrop-filter: blur(6px); animation: hintpulse 2.4s ease-in-out infinite; }
+  @keyframes hintpulse { 0%,100%{opacity:.7} 50%{opacity:1} }
+
+  /* intro veil */
+  .veil { position: fixed; inset: 0; z-index: 80; background: radial-gradient(120% 90% at 50% 40%, #2b2740, #10131b); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 24px; transition: opacity .8s ease, visibility .8s; }
+  .veil.gone { opacity: 0; visibility: hidden; }
+  .veil .eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+  .veil h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(40px, 7vw, 80px); line-height: 1.02; letter-spacing: -2px; margin-bottom: 22px; }
+  .veil h1 em { font-style: italic; color: var(--gold); font-weight: 300; }
+  .veil p { color: rgba(244,239,230,0.7); font-weight: 300; max-width: 460px; margin: 0 auto 34px; line-height: 1.7; font-size: 17px; }
+  .enter { background: var(--gold); color:#2a2110; border:none; cursor:pointer; padding: 16px 34px; border-radius: 100px; font-family:'Inter'; font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; transition: transform .2s; }
+  .enter:hover { transform: translateY(-2px); }
+  /* rainbow arc on veil */
+  .veil-arc { position:absolute; bottom:-30%; left:50%; transform:translateX(-50%); width:900px; height:900px; max-width:150vw; border-radius:50%;
+    background: conic-gradient(from 180deg at 50% 50%, transparent 0deg,#B3A6C6 8deg,#9DB6C9 16deg,#A9C6A8 24deg,#D9CE9A 32deg,#E4C29A 40deg,#D9A6A0 48deg,transparent 56deg);
+    -webkit-mask: radial-gradient(circle, transparent 62%, #000 62.4%, #000 70%, transparent 70.4%);
+            mask: radial-gradient(circle, transparent 62%, #000 62.4%, #000 70%, transparent 70.4%);
+    opacity:.4; filter: blur(2px); pointer-events:none; }
+
+  /* ---- memorial modal ---- */
+  .modal-bg { position: fixed; inset: 0; z-index: 90; background: rgba(8,10,16,0.6); backdrop-filter: blur(4px); display:none; align-items:center; justify-content:center; padding: 24px; }
+  .modal-bg.open { display: flex; }
+  .modal { background: var(--cream); color: var(--ink); width: 100%; max-width: 420px; border-radius: 26px; overflow: hidden; box-shadow: 0 40px 90px -30px rgba(0,0,0,0.6); }
+  .modal .top { padding: 34px 30px 26px; text-align: center; background: linear-gradient(150deg, #EBD9C7, #D9B99A); }
+  .modal .top .pet { font-size: 68px; }
+  .modal .top h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 34px; letter-spacing: -1px; margin-top: 6px; }
+  .modal .top .yrs { font-family:'Fraunces'; font-style: italic; color: #6b5636; font-size: 15px; margin-top: 4px; }
+  .modal .mid { padding: 26px 30px; }
+  .modal .mid p { font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; line-height: 1.65; color: #2A2620; font-weight: 300; text-align: center; }
+  .modal .stats { display:flex; justify-content:center; gap: 8px; margin-top: 22px; }
+  .modal .stats button { background:#18160F; color:var(--cream); border:none; cursor:pointer; padding: 12px 20px; border-radius: 100px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; transition: transform .15s, background .2s; }
+  .modal .stats button.ghost { background: transparent; color:#2A2620; border:1px solid #D4CFC6; }
+  .modal .stats button:hover { transform: translateY(-1px); }
+  .modal .visit { display:block; text-align:center; padding: 16px; background:#EAE4D8; color:#2A2620; text-decoration:none; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  .modal .close { position: absolute; top: 20px; right: 22px; z-index: 91; background: rgba(0,0,0,0.35); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; }
+
+  .mock-badge { position: fixed; bottom: 16px; right: 16px; z-index: 70; background: rgba(8,10,16,0.6); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 8px 14px; border-radius: 100px; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="/" class="logo">Anivo</a>
+  <div class="right">
+    <a class="pill">The Garden</a>
+    <a class="pill solid">Create a Memorial</a>
+  </div>
+</div>
+
+<!-- intro veil -->
+<div class="veil" id="veil">
+  <div class="veil-arc"></div>
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow">The Rainbow Bridge</div>
+    <h1>A world where they<br><em>wait for us</em></h1>
+    <p>Cross the bridge and wander a quiet land of forests, meadows and evening shores — where every soul we've loved rests under a soft light. Walk to a lantern, and remember.</p>
+    <button class="enter" id="enter">Enter the world →</button>
+  </div>
+</div>
+
+<!-- WORLD -->
+<div id="world">
+  <div id="track">
+    <div class="sky"></div>
+    <div class="orb"></div>
+    <div class="moon"></div>
+    <div class="stars" id="stars"></div>
+
+    <div class="layer hills" id="hills"></div>
+    <div class="mist"></div>
+    <div class="layer forest" id="forest"></div>
+
+    <div class="lake"></div>
+    <div class="shore"></div>
+    <div class="layer ground"></div>
+    <div class="layer" id="meadow"></div>
+
+    <div class="flies" id="flies"></div>
+
+    <!-- memorial lanterns -->
+    <div class="layer pe" id="spots"></div>
+  </div>
+</div>
+
+<div class="hint" id="hint">◂ Drag to wander ▸</div>
+
+<!-- memorial modal -->
+<div class="modal-bg" id="modalbg">
+  <div class="modal" id="modal" style="position:relative">
+    <button class="close" id="mclose">×</button>
+    <div class="top"><div class="pet" id="m-pet">🐈</div><h3 id="m-name">Luna</h3><div class="yrs" id="m-yrs">2011 – 2024</div></div>
+    <div class="mid">
+      <p id="m-ep">“The quiet warmth at the foot of every bed.”</p>
+      <div class="stats">
+        <button id="m-candle">🕯 Light a candle · <span id="m-cc">342</span></button>
+        <button class="ghost">🌸 Flower</button>
+      </div>
+    </div>
+    <a href="/memorial-luna" class="visit">Visit the full memorial →</a>
+  </div>
+</div>
+
+<div class="mock-badge">Mockup · sample world</div>
+
+<script>
+  // ----- build stars -----
+  const stars = document.getElementById('stars');
+  for (let i=0;i<120;i++){ const s=document.createElement('span'); s.className='star';
+    s.style.left = (40 + Math.random()*320) + 'vw'; s.style.top = (Math.random()*55) + '%';
+    s.style.animationDelay = (Math.random()*4)+'s'; stars.appendChild(s); }
+
+  // ----- hills -----
+  const hills = document.getElementById('hills');
+  for (let i=0;i<10;i++){ const h=document.createElement('div'); h.className='hill';
+    const w = 300 + Math.random()*260; h.style.width = w+'px'; h.style.height = (120+Math.random()*90)+'px';
+    h.style.left = (i*36 + Math.random()*8) + 'vw'; h.style.opacity = 0.35 + Math.random()*0.3; hills.appendChild(h); }
+
+  // ----- forest -----
+  const forest = document.getElementById('forest');
+  for (let i=0;i<26;i++){ const t=document.createElement('div'); t.className='tree' + (Math.random()>0.5?' pine':'');
+    t.style.left = (2 + i*13 + Math.random()*6) + 'vw';
+    const sc = 0.7 + Math.random()*0.7; t.style.transform = 'scale('+sc+')'; t.style.transformOrigin='bottom';
+    t.innerHTML = '<div class="crown"></div><div class="trunk"></div>'; forest.appendChild(t); }
+
+  // ----- meadow (grass + flowers) -----
+  const meadow = document.getElementById('meadow');
+  for (let i=0;i<160;i++){ const b=document.createElement('div'); b.className='blade';
+    b.style.left = (Math.random()*250) + 'vw'; b.style.height = (14+Math.random()*16)+'px';
+    b.style.animationDelay = (Math.random()*5)+'s'; meadow.appendChild(b); }
+  ['🌼','🌷','🌸','🪻','🌿'].forEach(()=>{});
+  for (let i=0;i<40;i++){ const f=document.createElement('div'); f.className='flower';
+    f.textContent = ['🌼','🌷','🌸','🪻'][Math.floor(Math.random()*4)];
+    f.style.left = (Math.random()*250)+'vw'; f.style.bottom = (26+Math.random()*3)+'%'; meadow.appendChild(f); }
+
+  // ----- fireflies -----
+  const flies = document.getElementById('flies');
+  for (let i=0;i<40;i++){ const f=document.createElement('div'); f.className='fly';
+    f.style.left = (Math.random()*360)+'vw'; f.style.bottom = (20+Math.random()*40)+'%';
+    f.style.animationDelay = (Math.random()*7)+'s'; f.style.animationDuration=(6+Math.random()*5)+'s'; flies.appendChild(f); }
+
+  // ----- memorial lanterns -----
+  const pets = [
+    { pet:'🐈', name:'Luna', yrs:'2011 – 2024', ep:'“The quiet warmth at the foot of every bed.”', cc:342, x:20, y:30 },
+    { pet:'🐕', name:'Max', yrs:'2009 – 2023', ep:'“He met us at the door for fourteen years.”', cc:511, x:52, y:34 },
+    { pet:'🐇', name:'Coco', yrs:'2018 – 2024', ep:'“Small paws, enormous heart.”', cc:96, x:86, y:29 },
+    { pet:'🐕', name:'Bella', yrs:'2012 – 2024', ep:'“Every walk was an adventure with her.”', cc:388, x:120, y:33 },
+    { pet:'🐦', name:'Kiwi', yrs:'2007 – 2023', ep:'“Still hear her good-mornings sometimes.”', cc:132, x:150, y:31 },
+    { pet:'🐈', name:'Simba', yrs:'2013 – 2025', ep:'“King of the windowsill, and of our hearts.”', cc:274, x:188, y:30 },
+    { pet:'🐩', name:'Pamuk', yrs:'2014 – 2024', ep:'“Soft as the name we gave her.”', cc:143, x:224, y:33 },
+    { pet:'🐈', name:'Mısır', yrs:'2015 – 2025', ep:'“Found us on a rainy street. Stayed forever.”', cc:167, x:270, y:32 },
+    { pet:'🐕', name:'Rocky', yrs:'2010 – 2022', ep:'“Bravest soul in the smallest fears.”', cc:205, x:312, y:31 },
+  ];
+  const spots = document.getElementById('spots');
+  pets.forEach(p => {
+    const d = document.createElement('div'); d.className='spot';
+    d.style.left = p.x + 'vw'; d.style.bottom = p.y + '%';
+    d.innerHTML = `<div class="lantern"><div class="glow"></div><div class="body"></div><div class="cap"></div><div class="pet">${p.pet}</div></div>
+      <div class="name">${p.name}</div><div class="yrs">${p.yrs}</div>`;
+    d.addEventListener('click', () => openMemorial(p));
+    spots.appendChild(d);
+  });
+
+  // ----- parallax on scroll -----
+  const world = document.getElementById('world');
+  const orb = document.querySelector('.orb'), moon = document.querySelector('.moon');
+  function parallax(){
+    const x = world.scrollLeft;
+    hills.style.transform = 'translateX(' + (-x*0.55) + 'px)';
+    forest.style.transform = 'translateX(' + (-x*0.25) + 'px)';
+    document.getElementById('stars').style.transform = 'translateX(' + (-x*0.15) + 'px)';
+    orb.style.transform = 'translateX(' + (-x*0.1) + 'px)';
+  }
+  world.addEventListener('scroll', () => requestAnimationFrame(parallax));
+
+  // ----- drag to pan -----
+  let down=false, sx=0, sl=0;
+  world.addEventListener('mousedown', e => { down=true; sx=e.pageX; sl=world.scrollLeft; world.classList.add('drag'); });
+  window.addEventListener('mouseup', () => { down=false; world.classList.remove('drag'); });
+  window.addEventListener('mousemove', e => { if(!down) return; world.scrollLeft = sl - (e.pageX - sx); });
+  // wheel → horizontal
+  world.addEventListener('wheel', e => { if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){ world.scrollLeft += e.deltaY; e.preventDefault(); } }, {passive:false});
+
+  // ----- veil enter -----
+  document.getElementById('enter').addEventListener('click', () => {
+    document.getElementById('veil').classList.add('gone');
+  });
+
+  // ----- modal -----
+  const mb = document.getElementById('modalbg');
+  function openMemorial(p){
+    document.getElementById('m-pet').textContent = p.pet;
+    document.getElementById('m-name').textContent = p.name;
+    document.getElementById('m-yrs').textContent = p.yrs;
+    document.getElementById('m-ep').textContent = p.ep;
+    document.getElementById('m-cc').textContent = p.cc;
+    mb.classList.add('open');
+  }
+  document.getElementById('mclose').addEventListener('click', ()=> mb.classList.remove('open'));
+  mb.addEventListener('click', e => { if(e.target===mb) mb.classList.remove('open'); });
+  const mc = document.getElementById('m-candle'), mcc = document.getElementById('m-cc');
+  mc.addEventListener('click', ()=>{ mcc.textContent = parseInt(mcc.textContent,10)+1; mc.style.background='#C6A15B'; });
+
+  // hide hint after first scroll
+  world.addEventListener('scroll', ()=>{ document.getElementById('hint').style.opacity='0'; }, {once:true});
+  parallax();
+</script>
+</body>
+</html>
