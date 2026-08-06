@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/jpeg" href="/favicon.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Anivo Memorial Garden — cross the Rainbow Bridge and visit a digital resting place where beloved pets are remembered forever. Light a candle, leave a flower, create a memorial.">
+<title>The Memorial Garden — Cross the Rainbow Bridge · Anivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream: #F4EFE6; --cream-2: #EAE4D8; --cream-3: #D4CFC6;
+    --ink: #18160F; --ink-2: #2A2620;
+    --gold: #A07840; --gold-soft: #B89366; --muted: #7A7060;
+    /* soft, muted rainbow — never neon */
+    --r1: #D9A6A0; --r2: #E4C29A; --r3: #D9CE9A; --r4: #A9C6A8; --r5: #9DB6C9; --r6: #B3A6C6;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  .container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+  a { color: inherit; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(12px); background: rgba(244,239,230,0.72); border-bottom: 1px solid rgba(24,22,15,0.06); }
+  nav .inner { max-width: 1240px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Fraunces', serif; font-weight: 600; font-size: 22px; letter-spacing: -0.5px; font-style: italic; text-decoration: none; color: var(--ink); }
+  .logo::after { content: '·'; color: var(--gold); margin-left: 6px; }
+  .nav-links { display: flex; gap: 34px; align-items: center; }
+  .nav-links a { text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; opacity: 0.7; transition: opacity 0.2s; }
+  .nav-links a:hover { opacity: 1; }
+  .btn-primary { background: var(--gold); color: var(--cream); padding: 11px 22px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: transform 0.2s, background 0.2s; border: none; cursor: pointer; display: inline-block; }
+  .btn-primary:hover { transform: translateY(-1px); background: var(--gold-soft); }
+  @media (max-width: 760px) { .nav-links a:not(.btn-primary) { display: none; } }
+
+  /* ===== RAINBOW BRIDGE ENTRANCE ===== */
+  .bridge {
+    position: relative; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 140px 24px 80px; overflow: hidden;
+    background:
+      radial-gradient(120% 80% at 50% 120%, rgba(157,182,201,0.30), transparent 60%),
+      linear-gradient(180deg, #F7F3EC 0%, #F1ECE0 40%, #ECE7DE 100%);
+  }
+  /* soft rainbow arc */
+  .arc {
+    position: absolute; left: 50%; bottom: -34%; transform: translateX(-50%);
+    width: 1200px; height: 1200px; max-width: 170vw; border-radius: 50%;
+    background: conic-gradient(from 180deg at 50% 50%, transparent 0deg,
+      var(--r6) 8deg, var(--r5) 16deg, var(--r4) 24deg, var(--r3) 32deg,
+      var(--r2) 40deg, var(--r1) 48deg, transparent 56deg);
+    -webkit-mask: radial-gradient(circle, transparent 60%, #000 60.4%, #000 70%, transparent 70.4%);
+            mask: radial-gradient(circle, transparent 60%, #000 60.4%, #000 70%, transparent 70.4%);
+    opacity: 0.5; filter: blur(2px); pointer-events: none;
+  }
+  /* drifting light motes */
+  .motes { position: absolute; inset: 0; pointer-events: none; }
+  .mote { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.9);
+    box-shadow: 0 0 12px 3px rgba(232,220,200,0.7); animation: rise linear infinite; opacity: 0; }
+  @keyframes rise { 0% { transform: translateY(40px) scale(0.6); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translateY(-120px) scale(1); opacity: 0; } }
+
+  .bridge-inner { position: relative; z-index: 3; max-width: 720px; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 12px; }
+  .eyebrow::before, .eyebrow::after { content: ''; width: 26px; height: 1px; background: var(--gold); opacity: 0.6; }
+  .bridge h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(44px, 7vw, 86px); line-height: 1.0; letter-spacing: -2px; margin-bottom: 26px; }
+  .bridge h1 em { font-style: italic; font-weight: 300; color: var(--gold); }
+  .bridge p { font-size: 18px; line-height: 1.7; color: var(--muted); font-weight: 300; max-width: 520px; margin: 0 auto 40px; }
+  .enter-btn { display: inline-flex; align-items: center; gap: 12px; background: var(--ink); color: var(--cream); padding: 16px 30px; border-radius: 100px; text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; transition: transform 0.25s, box-shadow 0.25s; box-shadow: 0 14px 30px -14px rgba(24,22,15,0.5); }
+  .enter-btn:hover { transform: translateY(-2px); box-shadow: 0 20px 40px -16px rgba(24,22,15,0.55); }
+  .enter-btn svg { width: 15px; height: 15px; }
+  /* bridge silhouette */
+  .bridge-svg { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; z-index: 2; pointer-events: none; }
+
+  /* ===== THE GARDEN ===== */
+  .garden { padding: 90px 0 40px; }
+  .garden-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; flex-wrap: wrap; margin-bottom: 14px; }
+  .garden-head h2 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(30px, 4vw, 46px); letter-spacing: -1px; }
+  .garden-head h2 em { font-style: italic; color: var(--gold); font-weight: 300; }
+  .garden-sub { color: var(--muted); font-weight: 300; font-size: 16px; margin-top: 8px; max-width: 460px; }
+  .garden-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .search { display: flex; align-items: center; gap: 10px; background: var(--cream-2); border: 1px solid var(--cream-3); border-radius: 100px; padding: 11px 18px; min-width: 220px; }
+  .search input { border: none; background: transparent; outline: none; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink); width: 100%; }
+  .search svg { width: 16px; height: 16px; opacity: 0.5; flex-shrink: 0; }
+
+  .count-line { color: var(--muted); font-size: 13px; letter-spacing: 0.4px; margin: 24px 0 26px; }
+  .count-line strong { color: var(--ink); font-weight: 600; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  @media (max-width: 920px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+
+  .stone { display: block; text-decoration: none; color: inherit; background: var(--cream-2); border: 1px solid rgba(24,22,15,0.06); border-radius: 22px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .stone:hover { transform: translateY(-4px); box-shadow: 0 26px 50px -30px rgba(24,22,15,0.35); }
+  .portrait { position: relative; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+  .portrait .yr { position: absolute; top: 12px; left: 14px; font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: rgba(24,22,15,0.5); }
+  .portrait .flame { position: absolute; top: 12px; right: 14px; font-size: 15px; background: rgba(244,239,230,0.7); border-radius: 100px; padding: 3px 9px; display: flex; align-items: center; gap: 4px; font-family: 'Inter'; font-size: 11px; font-weight: 600; color: var(--ink-2); }
+  .stone-body { padding: 20px 22px 22px; }
+  .stone-body h3 { font-family: 'Fraunces', serif; font-weight: 400; font-style: italic; font-size: 24px; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .stone-meta { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
+  .epitaph { font-size: 14.5px; line-height: 1.6; color: var(--ink-2); font-weight: 300; font-family: 'Fraunces', serif; font-style: italic; }
+  .stone-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(24,22,15,0.08); }
+  .candle-btn { display: inline-flex; align-items: center; gap: 7px; background: none; border: 1px solid var(--cream-3); border-radius: 100px; padding: 7px 14px; cursor: pointer; font-family: 'Inter'; font-size: 12px; font-weight: 600; color: var(--ink-2); transition: background 0.2s, border-color 0.2s, transform 0.1s; }
+  .candle-btn:hover { background: var(--cream); border-color: var(--gold-soft); }
+  .candle-btn.lit { color: var(--gold); border-color: var(--gold-soft); }
+  .candle-btn:active { transform: scale(0.96); }
+  .visit { font-size: 12px; font-weight: 600; color: var(--gold); letter-spacing: 0.5px; }
+
+  /* create band */
+  .create { margin: 70px 0 20px; background: linear-gradient(120deg, #201C14, #2A2620); color: var(--cream); border-radius: 28px; padding: 60px; text-align: center; position: relative; overflow: hidden; }
+  .create::before { content: ''; position: absolute; top: -40%; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; background: radial-gradient(circle, rgba(160,120,64,0.18), transparent 65%); pointer-events: none; }
+  .create h2 { position: relative; font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(28px, 4vw, 44px); letter-spacing: -1px; margin-bottom: 14px; }
+  .create h2 em { font-style: italic; color: var(--gold-soft); }
+  .create p { position: relative; color: rgba(244,239,230,0.72); font-weight: 300; max-width: 440px; margin: 0 auto 30px; line-height: 1.6; }
+  .create .btn-primary { position: relative; padding: 15px 32px; font-size: 12px; }
+
+  /* app CTA */
+  .appcta { padding: 80px 0; text-align: center; }
+  .appcta h2 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(26px, 3.4vw, 40px); letter-spacing: -1px; margin-bottom: 12px; }
+  .appcta h2 em { font-style: italic; color: var(--gold); }
+  .appcta p { color: var(--muted); font-weight: 300; max-width: 420px; margin: 0 auto 28px; line-height: 1.6; }
+  .stores { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-store { display: inline-flex; align-items: center; gap: 12px; background: var(--ink); color: var(--cream); padding: 13px 22px; border-radius: 14px; text-decoration: none; transition: transform 0.2s; }
+  .btn-store:hover { transform: translateY(-2px); }
+  .btn-store svg { width: 22px; height: 22px; }
+  .btn-store .small { font-size: 10px; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; line-height: 1; }
+  .btn-store .big { font-size: 15px; font-weight: 600; line-height: 1.2; margin-top: 3px; }
+
+  /* FOOTER */
+  footer { background: var(--cream-2); border-top: 1px solid rgba(24,22,15,0.07); padding: 60px 0 40px; margin-top: 40px; }
+  .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
+  .footer-tagline { color: var(--muted); font-weight: 300; font-size: 14px; margin-top: 10px; max-width: 240px; line-height: 1.6; }
+  .footer-col h4 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .footer-col a { display: block; text-decoration: none; color: var(--ink-2); font-size: 14px; opacity: 0.75; margin-bottom: 10px; transition: opacity 0.2s; }
+  .footer-col a:hover { opacity: 1; }
+  .footer-bottom { display: flex; justify-content: space-between; padding-top: 24px; border-top: 1px solid rgba(24,22,15,0.08); color: var(--muted); font-size: 13px; }
+
+  .mock-badge { position: fixed; bottom: 16px; right: 16px; z-index: 200; background: var(--ink); color: var(--cream); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 8px 14px; border-radius: 100px; opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<nav><div class="inner">
+  <a href="/" class="logo">Anivo</a>
+  <div class="nav-links">
+    <a href="#garden">The Garden</a>
+    <a href="/rainbow-bridge-poem">Rainbow Bridge Poem</a>
+    <a href="/pet-age-calculator">Age Calculator</a>
+    <a href="#create" class="btn-primary">Create a Memorial</a>
+  </div>
+</div></nav>
+
+<!-- ===== RAINBOW BRIDGE ENTRANCE ===== -->
+<header class="bridge">
+  <div class="arc"></div>
+  <div class="motes" id="motes"></div>
+  <div class="bridge-inner">
+    <span class="eyebrow">The Rainbow Bridge</span>
+    <h1>Cross the bridge,<br>into the <em>garden</em></h1>
+    <p>A quiet, forever place where the pets we love are remembered — visited, honored, never forgotten. Walk in, and light a candle for someone dear.</p>
+    <a href="#garden" class="enter-btn">
+      Enter the Garden
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+  </div>
+  <svg class="bridge-svg" viewBox="0 0 1440 120" preserveAspectRatio="none" fill="#ECE7DE">
+    <path d="M0,120 L0,70 Q360,0 720,0 Q1080,0 1440,70 L1440,120 Z"/>
+  </svg>
+</header>
+
+<!-- ===== THE GARDEN ===== -->
+<main class="garden" id="garden">
+  <div class="container">
+    <div class="garden-head">
+      <div>
+        <h2>The Memorial <em>Garden</em></h2>
+        <p class="garden-sub">Every stone here holds a story. Wander, remember, and leave a little light behind.</p>
+      </div>
+      <div class="garden-tools">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" placeholder="Search a name…" />
+        </div>
+        <a href="#create" class="btn-primary">Create a Memorial</a>
+      </div>
+    </div>
+    <p class="count-line"><strong>2,481</strong> beloved companions remembered · <strong>18,940</strong> candles lit this month</p>
+
+    <div class="grid" id="grid"><!-- stones injected --></div>
+  </div>
+
+  <!-- CREATE BAND -->
+  <div class="container" id="create">
+    <div class="create">
+      <h2>Give them a place to <em>rest</em></h2>
+      <p>Create a free memorial in minutes — their name, their photo, the story only you can tell. Share it with everyone who loved them.</p>
+      <a href="#" class="btn-primary" onclick="alert('Mockup — the create flow comes next once we wire the backend.'); return false;">Create a Memorial</a>
+    </div>
+  </div>
+
+  <!-- APP CTA -->
+  <section class="appcta">
+    <div class="container">
+      <h2>Keep them close, <em>forever</em></h2>
+      <p>A memorial here is just the beginning. In the Anivo app, hold every photo, voice note and memory in one private keepsake.</p>
+      <div class="stores">
+        <a href="#" class="btn-store">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.5c0-2.1 1.7-3.1 1.8-3.15-1-1.45-2.5-1.65-3-1.67-1.3-.13-2.5.75-3.15.75-.65 0-1.65-.73-2.7-.7-1.4.02-2.65.8-3.36 2.05-1.43 2.5-.37 6.2 1.03 8.23.68 1 1.5 2.12 2.55 2.08 1.02-.04 1.4-.66 2.64-.66 1.23 0 1.58.66 2.65.64 1.1-.02 1.8-1.02 2.47-2.02.78-1.16 1.1-2.28 1.12-2.34-.02-.01-2.14-.82-2.16-3.24zM15 6.3c.56-.68.94-1.62.84-2.56-.8.03-1.79.53-2.37 1.2-.52.6-.98 1.56-.86 2.48.9.07 1.82-.45 2.39-1.12z"/></svg>
+          <span><span class="small">Download on the</span><br><span class="big">App Store</span></span>
+        </a>
+        <a href="#" class="btn-store">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 2.3c-.3.3-.5.8-.5 1.4v16.6c0 .6.2 1.1.5 1.4l.1.1 9.3-9.3v-.2L3.6 2.3zM16 15.4l-3-3 3-3 3.6 2c1 .6 1 1.5 0 2.1L16 15.4zM13.6 12.1l-9.2 9.2c.3.3.9.4 1.5.1L16.6 15l-3-2.9zM4 2.7l9.6 9.4 3-3L5.9 2.6c-.6-.3-1.2-.3-1.9.1z"/></svg>
+          <span><span class="small">Get it on</span><br><span class="big">Google Play</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo">Anivo</div>
+        <p class="footer-tagline">A keepsake for those who stay in our hearts.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Garden</h4>
+        <a href="#garden">Visit the Garden</a>
+        <a href="#create">Create a Memorial</a>
+        <a href="/rainbow-bridge-poem">Rainbow Bridge Poem</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="/blog-pet-loss">Pet Loss Guide</a>
+        <a href="/blog-pet-memorial-ideas">Memorial Ideas</a>
+        <a href="/pet-age-calculator">Pet Age Calculator</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/contact">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Anivo. Made with care.</div>
+      <div>anivo.app</div>
+    </div>
+  </div>
+</footer>
+
+<div class="mock-badge">Mockup · sample data</div>
+
+<script>
+  // drifting motes on the bridge
+  (function(){
+    const m = document.getElementById('motes');
+    for (let i=0;i<18;i++){
+      const s = document.createElement('span');
+      s.className = 'mote';
+      s.style.left = Math.random()*100 + '%';
+      s.style.bottom = (Math.random()*40) + '%';
+      s.style.animationDuration = (5 + Math.random()*6) + 's';
+      s.style.animationDelay = (Math.random()*6) + 's';
+      const sc = 0.5 + Math.random();
+      s.style.transform = 'scale('+sc+')';
+      m.appendChild(s);
+    }
+  })();
+
+  // sample memorials
+  const pets = [
+    { slug:'luna', name:'Luna', emoji:'🐈', kind:'Cat · Ragdoll', years:'2011 – 2024', epitaph:'“The quiet warmth at the foot of every bed.”', candles:342, bg:['#EBD9C7','#D9B99A'] },
+    { slug:'max', name:'Max', emoji:'🐕', kind:'Dog · Golden Retriever', years:'2009 – 2023', epitaph:'“He met us at the door for fourteen years.”', candles:511, bg:['#E7D3A8','#C9AE7A'] },
+    { slug:'coco', name:'Coco', emoji:'🐇', kind:'Rabbit', years:'2018 – 2024', epitaph:'“Small paws, enormous heart.”', candles:96, bg:['#DDD3C4','#BFC3A6'] },
+    { slug:'simba', name:'Simba', emoji:'🐈', kind:'Cat · Tabby', years:'2013 – 2025', epitaph:'“King of the windowsill, and of our hearts.”', candles:274, bg:['#EAD2B0','#D6A76F'] },
+    { slug:'bella', name:'Bella', emoji:'🐕', kind:'Dog · Beagle', years:'2012 – 2024', epitaph:'“Every walk was an adventure with her.”', candles:388, bg:['#E3D6BE','#C4B189'] },
+    { slug:'kiwi', name:'Kiwi', emoji:'🐦', kind:'Parrot', years:'2007 – 2023', epitaph:'“Still hear her good-mornings sometimes.”', candles:132, bg:['#CFDCC4','#A9C0A2'] },
+    { slug:'rocky', name:'Rocky', emoji:'🐕', kind:'Dog · Boxer', years:'2010 – 2022', epitaph:'“Bravest soul in the smallest fears.”', candles:205, bg:['#E6D2B4','#CDA774'] },
+    { slug:'misi', name:'Mısır', emoji:'🐈', kind:'Cat · Street rescue', years:'2015 – 2025', epitaph:'“Found us on a rainy street. Stayed forever.”', candles:167, bg:['#E4D8C6','#C7B393'] },
+    { slug:'pamuk', name:'Pamuk', emoji:'🐩', kind:'Dog · Poodle', years:'2014 – 2024', epitaph:'“Soft as the name we gave her.”', candles:143, bg:['#EDE2D0','#D3C1A2'] },
+  ];
+
+  const grid = document.getElementById('grid');
+  pets.forEach(p => {
+    const startYr = p.years.split('–')[0].trim();
+    const a = document.createElement('a');
+    a.className = 'stone';
+    a.href = '/memorial-luna'; // mockup: all link to the sample detail page
+    a.innerHTML = `
+      <div class="portrait" style="background:linear-gradient(150deg, ${p.bg[0]}, ${p.bg[1]});">
+        <span class="yr">${startYr}</span>
+        <span class="flame">🕯 <span data-c>${p.candles}</span></span>
+        <span>${p.emoji}</span>
+      </div>
+      <div class="stone-body">
+        <h3>${p.name}</h3>
+        <div class="stone-meta">${p.kind} · ${p.years}</div>
+        <p class="epitaph">${p.epitaph}</p>
+        <div class="stone-foot">
+          <button class="candle-btn" type="button">🕯 Light a candle</button>
+          <span class="visit">Visit →</span>
+        </div>
+      </div>`;
+    // light a candle (mock, client-side)
+    const btn = a.querySelector('.candle-btn');
+    const cnt = a.querySelector('[data-c]');
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (btn.classList.contains('lit')) return;
+      btn.classList.add('lit');
+      cnt.textContent = (parseInt(cnt.textContent,10) + 1);
+      btn.textContent = '🕯 Candle lit';
+    });
+    grid.appendChild(a);
+  });
+</script>
+</body>
+</html>
