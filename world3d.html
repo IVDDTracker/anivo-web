@@ -137,8 +137,8 @@ function gradientTexture(stops){
 
 function init(){
   scene = new THREE.Scene();
-  scene.background = gradientTexture([[0,'#a6d2ff'],[0.45,'#d6ecff'],[0.78,'#ffeecf'],[1,'#ffdca6']]);
-  scene.fog = new THREE.Fog(0xdCe8f5, 55, 175);
+  scene.background = gradientTexture([[0,'#5f97cf'],[0.48,'#9dc0e2'],[0.8,'#dcb888'],[1,'#c1904f']]);
+  scene.fog = new THREE.Fog(0xaebfd6, 62, 205);
 
   camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 500);
   camera.position.set(6, 12, 40);
@@ -148,7 +148,7 @@ function init(){
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 0.92;
   document.body.appendChild(renderer.domElement);
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -159,17 +159,17 @@ function init(){
   controls.autoRotate = true; controls.autoRotateSpeed = 0.28;
 
   // lights — bright, warm, heavenly
-  scene.add(new THREE.HemisphereLight(0xdcecff, 0x7fa85c, 1.05));
-  scene.add(new THREE.AmbientLight(0xffffff, 0.28));
-  const sun = new THREE.DirectionalLight(0xfff3da, 1.7);
+  scene.add(new THREE.HemisphereLight(0xbcd4ee, 0x5f8544, 0.7));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+  const sun = new THREE.DirectionalLight(0xffe6c0, 1.15);
   sun.position.set(-34, 20, -46); scene.add(sun);
-  const fill = new THREE.DirectionalLight(0xbfe0ff, 0.35);
+  const fill = new THREE.DirectionalLight(0x9cc0e6, 0.3);
   fill.position.set(30, 16, 34); scene.add(fill);
 
-  // sun disc (blooms)
-  const sd = new THREE.Mesh(new THREE.SphereGeometry(7, 24, 24),
-    new THREE.MeshBasicMaterial({ color:0xfff4dd }));
-  sd.position.set(-52, 26, -70); scene.add(sd);
+  // sun disc (soft, distant — hafif ışıma)
+  const sd = new THREE.Mesh(new THREE.SphereGeometry(4, 24, 24),
+    new THREE.MeshBasicMaterial({ color:0xffe1b0 }));
+  sd.position.set(-60, 30, -88); scene.add(sd);
 
   MAT.marble = new THREE.MeshStandardMaterial({ color:0xf2ede1, roughness:0.5, metalness:0.05 });
   MAT.marbleDark = new THREE.MeshStandardMaterial({ color:0xe6ddc9, roughness:0.6 });
@@ -181,7 +181,7 @@ function init(){
   try {
     composer = new THREE.EffectComposer(renderer);
     composer.addPass(new THREE.RenderPass(scene, camera));
-    const bloom = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.75, 0.7, 0.82);
+    const bloom = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.28, 0.5, 0.9);
     composer.addPass(bloom);
   } catch(e){ composer = null; }
 
@@ -197,7 +197,7 @@ function init(){
 function buildGround(){
   const geo = new THREE.PlaneGeometry(240, 240, 140, 140); geo.rotateX(-Math.PI/2);
   const pos = geo.attributes.position; const col = [];
-  const cLow = new THREE.Color(0x5f9a44), cHigh = new THREE.Color(0x8fc267);
+  const cLow = new THREE.Color(0x466f32), cHigh = new THREE.Color(0x6fa047);
   for (let i=0;i<pos.count;i++){
     const x = pos.getX(i), z = pos.getZ(i);
     let y = terrainH(x, z);
@@ -214,7 +214,7 @@ function buildGround(){
 
 function buildWater(){
   const geo = new THREE.PlaneGeometry(240, 150, 1, 1); geo.rotateX(-Math.PI/2);
-  const mat = new THREE.MeshStandardMaterial({ color:0x93cfe8, roughness:0.08, metalness:0.5, transparent:true, opacity:0.82 });
+  const mat = new THREE.MeshStandardMaterial({ color:0x5aa6cf, roughness:0.12, metalness:0.5, transparent:true, opacity:0.85 });
   const w = new THREE.Mesh(geo, mat); w.position.set(0, -0.7, WATER_Z + 72); scene.add(w);
 }
 
@@ -299,7 +299,7 @@ function buildGraves(){
 }
 
 function buildClouds(){
-  const mat = new THREE.MeshStandardMaterial({ color:0xffffff, roughness:1, emissive:0xffffff, emissiveIntensity:0.12, flatShading:true });
+  const mat = new THREE.MeshStandardMaterial({ color:0xf0f4fa, roughness:1, emissive:0xdfe8f2, emissiveIntensity:0.04, flatShading:true });
   for (let i=0;i<10;i++){
     const c = new THREE.Group();
     for (let k=0;k<5;k++){ const p = new THREE.Mesh(new THREE.IcosahedronGeometry(2.4+Math.random()*1.6, 0), mat);
