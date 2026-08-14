@@ -51,13 +51,30 @@
   .modal .visit { display:block; text-align:center; padding:16px; background:var(--cream-2); color:var(--ink-2); text-decoration:none; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
   .modal .close { position:absolute; top:18px; right:20px; z-index:2; background:rgba(0,0,0,0.3); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; }
   .mock-badge { position:fixed; bottom:16px; right:16px; z-index:45; background:rgba(8,10,16,0.55); color:#fff; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:8px 14px; border-radius:100px; }
+  .form-bg { position:fixed; inset:0; z-index:85; background:rgba(15,18,26,0.55); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:24px; }
+  .form-bg.open { display:flex; }
+  .form { background:var(--cream); color:var(--ink); width:100%; max-width:440px; border-radius:26px; overflow:hidden; box-shadow:0 40px 90px -30px rgba(0,0,0,0.6); max-height:92vh; overflow-y:auto; }
+  .form .top { padding:26px 30px 20px; text-align:center; background:linear-gradient(150deg,#f3e7d2,#e6cba6); }
+  .form .top h3 { font-family:'Fraunces',serif; font-weight:400; font-size:29px; letter-spacing:-0.5px; }
+  .form .top p { font-size:13px; color:#6b5636; margin-top:6px; font-family:'Fraunces'; font-style:italic; }
+  .form .body { padding:22px 26px 26px; display:flex; flex-direction:column; gap:15px; }
+  .form label { font-size:10.5px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#8a7c5f; display:block; margin-bottom:8px; }
+  .emoji { display:flex; gap:8px; flex-wrap:wrap; }
+  .emoji-b { font-size:23px; width:44px; height:44px; border-radius:12px; border:1.5px solid var(--cream-3); background:#fff; cursor:pointer; display:grid; place-items:center; transition:.12s; }
+  .emoji-b.on { border-color:var(--gold); background:#fbf3e2; transform:scale(1.06); }
+  .form input, .form textarea { width:100%; border:1.5px solid var(--cream-3); border-radius:12px; padding:12px 14px; font-family:'Inter'; font-size:15px; color:var(--ink); background:#fff; }
+  .form textarea { font-family:'Fraunces',serif; font-style:italic; resize:vertical; min-height:66px; }
+  .form input:focus, .form textarea:focus { outline:none; border-color:var(--gold); }
+  .form .place { background:#18160F; color:var(--cream); border:none; cursor:pointer; padding:15px; border-radius:100px; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-top:4px; transition:transform .18s; }
+  .form .place:hover { transform:translateY(-2px); }
+  .form .cancel { background:transparent; border:none; color:#8a7c5f; font-size:12px; letter-spacing:1px; cursor:pointer; padding:6px; }
 </style>
 </head>
 <body>
 
 <div class="bar">
   <a href="/" class="logo">Anivo</a>
-  <a class="pill solid"><span class="lock">✦</span>Create a Memorial · Lifetime</a>
+  <a class="pill solid" id="addBtn"><span class="lock">✦</span>Add your companion</a>
 </div>
 
 <div class="loading" id="loading">Shaping the valley…</div>
@@ -90,7 +107,21 @@
   </div>
 </div>
 
-<div class="mock-badge">Mockup · 3D valley</div>
+<div class="form-bg" id="formbg">
+  <div class="form">
+    <div class="top"><h3>Add your companion</h3><p>They'll rest in the garden, lit forever.</p></div>
+    <div class="body">
+      <div><label>Who were they?</label><div class="emoji" id="emoji"></div></div>
+      <div><label>Name</label><input id="f-name" maxlength="24" placeholder="Their name" autocomplete="off"></div>
+      <div><label>Years together</label><input id="f-yrs" maxlength="20" placeholder="2018 – 2025" autocomplete="off"></div>
+      <div><label>A few words</label><textarea id="f-ep" maxlength="140" placeholder="Something you'll always remember…"></textarea></div>
+      <button class="place" id="f-place" type="button">🕯 Place in the garden</button>
+      <button class="cancel" id="f-cancel" type="button">Not now</button>
+    </div>
+  </div>
+</div>
+
+<div class="mock-badge">Saved on this device</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -190,6 +221,7 @@ function init(){
   renderer.domElement.addEventListener('click', onClick);
   document.getElementById('loading').style.opacity='0';
   setTimeout(()=> document.getElementById('loading').style.display='none', 600);
+  loadSaved();
   animate();
 }
 
@@ -412,12 +444,13 @@ function onMove(e){
     tip.innerHTML=p.name+'<small>'+p.yrs+'</small>'; tip.style.left=e.clientX+'px'; tip.style.top=e.clientY+'px'; tip.style.opacity='1';
   } else { hovered=null; document.body.style.cursor='grab'; tip.style.opacity='0'; }
 }
-function onClick(){
-  if(!hovered) return; const p=hovered.userData.pet;
+function openMemorial(p){
   document.getElementById('m-pet').textContent=p.pet; document.getElementById('m-name').textContent=p.name;
-  document.getElementById('m-yrs').textContent=p.yrs; document.getElementById('m-ep').textContent=p.ep; document.getElementById('m-cc').textContent=p.cc;
+  document.getElementById('m-yrs').textContent=p.yrs||''; document.getElementById('m-ep').textContent=p.ep||''; document.getElementById('m-cc').textContent=p.cc;
+  const visit=document.querySelector('.modal .visit'); if(visit) visit.style.display = p.mine ? 'none' : 'block';
   document.getElementById('modalbg').classList.add('open');
 }
+function onClick(){ if(!hovered) return; openMemorial(hovered.userData.pet); }
 function animate(){
   requestAnimationFrame(animate); const t=clock.getElapsedTime();
   graves.forEach(gr=>{ const pulse=0.75+Math.sin(t*1.6+gr.phase)*0.25; gr.light.intensity=0.9*pulse; gr.glow.material.opacity=0.35*pulse+0.2; gr.glow.scale.setScalar(0.9+pulse*0.22); });
@@ -425,6 +458,7 @@ function animate(){
   if(window._birds) window._birds.forEach(b=>{ b.userData.a+=b.userData.sp*0.02; b.position.x=Math.cos(b.userData.a)*b.userData.r; b.position.z=-10+Math.sin(b.userData.a)*b.userData.r*0.5; b.rotation.y=-b.userData.a; });
   if(window._petals){ const p=window._petals,pa=p.geometry.attributes.position,b=p.userData.base; for(let i=0;i<pa.count;i++){ let y=b[i*3+1]-((t*2.2+i)%28); if(y<0)y+=28; pa.setY(i,y); pa.setX(i,b[i*3]+Math.sin(t*0.5+i)*1.2); } pa.needsUpdate=true; }
   if(window._motes){ const p=window._motes,pa=p.geometry.attributes.position,b=p.userData.base; for(let i=0;i<pa.count;i++){ pa.setY(i,b[i*3+1]+Math.sin(t*0.5+i)*0.6); } pa.needsUpdate=true; }
+  if(window._fly){ camera.position.lerp(window._fly.p,0.05); controls.target.lerp(window._fly.l,0.07); if(++window._fly.n>70) window._fly=null; }
   controls.update();
   if(composer) composer.render(); else renderer.render(scene,camera);
 }
@@ -435,6 +469,57 @@ document.getElementById('modalbg').addEventListener('click', e=>{ if(e.target.id
 const mc=document.getElementById('m-candle'), mcc=document.getElementById('m-cc');
 mc.addEventListener('click', ()=>{ mcc.textContent=parseInt(mcc.textContent,10)+1; mc.style.background='#C6A15B'; });
 setTimeout(()=>{ const h=document.getElementById('hint'); if(h) h.style.opacity='0'; }, 8000);
+
+/* ---- Add your own companion — placement, persistence, camera ---- */
+let userCount = 0;
+function placeUserGrave(pet){
+  const curve = window._pathCurve;
+  const t = 0.12 + ((userCount*0.618034)%1)*0.74;                 // golden-ratio spread along the path
+  const p = curve.getPoint(t), tan = curve.getTangent(t).normalize();
+  const side = new THREE.Vector3(-tan.z,0,tan.x).multiplyScalar((userCount%2? -1:1) * (5.8 + (userCount%3)*0.6)); // outer row, clear of seeded graves
+  const x = p.x + side.x, z = p.z + side.z, y = terrainH(x,z);
+  const { g, glow, light } = makeGrave(['head','cross','obelisk','head'][userCount%4]);
+  g.position.set(x,y,z); g.lookAt(p.x, y, p.z);
+  const proxy = new THREE.Mesh(new THREE.BoxGeometry(2.2,3.4,1.8), new THREE.MeshBasicMaterial({visible:false}));
+  proxy.position.y = 1.6; proxy.userData.pet = pet; g.add(proxy); clickable.push(proxy);
+  scene.add(g); graves.push({ g, glow, light, phase:Math.random()*6.28 });
+  userCount++;
+  return { x, y, z };
+}
+function flyTo(pos, look){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches){ camera.position.copy(pos); controls.target.copy(look); return; }
+  controls.autoRotate = false; window._fly = { p:pos.clone(), l:look.clone(), n:0 };
+}
+function savedRaw(){ try { return JSON.parse(localStorage.getItem('anivo_pets')||'[]'); } catch(e){ return []; } }
+function loadSaved(){ savedRaw().forEach(p => { p.mine = true; placeUserGrave(p); }); }
+
+const EMOJI = ['🐈','🐕','🐇','🐦','🐢','🐹','🐴','🐠','🐍','🦜','🐖','🐐'];
+let pickEmoji = EMOJI[0];
+(function(){
+  const box = document.getElementById('emoji');
+  EMOJI.forEach((e,i) => {
+    const b = document.createElement('button');
+    b.className = 'emoji-b' + (i===0 ? ' on' : ''); b.type = 'button'; b.textContent = e;
+    b.addEventListener('click', () => { pickEmoji = e; box.querySelectorAll('.emoji-b').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
+    box.appendChild(b);
+  });
+})();
+document.getElementById('addBtn').addEventListener('click', ()=> document.getElementById('formbg').classList.add('open'));
+document.getElementById('f-cancel').addEventListener('click', ()=> document.getElementById('formbg').classList.remove('open'));
+document.getElementById('formbg').addEventListener('click', e=>{ if(e.target.id==='formbg') e.currentTarget.classList.remove('open'); });
+document.getElementById('f-place').addEventListener('click', ()=>{
+  const name = (document.getElementById('f-name').value.trim() || 'Beloved').slice(0,24);
+  const yrs  = document.getElementById('f-yrs').value.trim().slice(0,20);
+  const epin = document.getElementById('f-ep').value.trim().slice(0,140);
+  const pet = { pet:pickEmoji, name, yrs, ep: epin ? ('“'+epin+'”') : '', cc:0, mine:true };
+  const all = savedRaw(); all.push(pet); try { localStorage.setItem('anivo_pets', JSON.stringify(all)); } catch(e){}
+  const { x, y, z } = placeUserGrave(pet);
+  document.getElementById('f-name').value=''; document.getElementById('f-yrs').value=''; document.getElementById('f-ep').value='';
+  document.getElementById('formbg').classList.remove('open');
+  document.getElementById('veil').classList.add('gone');
+  flyTo(new THREE.Vector3(x + (x>=0?-9:9), y+7, z+13), new THREE.Vector3(x, y+1.3, z));
+  setTimeout(()=> openMemorial(pet), 1600);
+});
 
 if (window.THREE && THREE.OrbitControls) init();
 else document.getElementById('loading').textContent = '3D failed to load — open over http (Vercel preview), not file://';
