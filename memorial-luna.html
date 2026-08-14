@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/jpeg" href="/favicon.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="In loving memory of Luna (2011–2024). A Ragdoll cat remembered forever in the Anivo Memorial Garden. Light a candle and share your memories.">
+<title>Luna · 2011–2024 — In Loving Memory · Anivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream: #F4EFE6; --cream-2: #EAE4D8; --cream-3: #D4CFC6;
+    --ink: #18160F; --ink-2: #2A2620;
+    --gold: #A07840; --gold-soft: #B89366; --muted: #7A7060;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  .container { max-width: 760px; margin: 0 auto; padding: 0 32px; }
+  a { color: inherit; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(12px); background: rgba(244,239,230,0.72); border-bottom: 1px solid rgba(24,22,15,0.06); }
+  nav .inner { max-width: 1240px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Fraunces', serif; font-weight: 600; font-size: 22px; letter-spacing: -0.5px; font-style: italic; text-decoration: none; color: var(--ink); }
+  .logo::after { content: '·'; color: var(--gold); margin-left: 6px; }
+  .back { font-size: 13px; font-weight: 500; letter-spacing: 0.3px; opacity: 0.7; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .back:hover { opacity: 1; }
+
+  /* hero portrait */
+  .m-hero { padding: 120px 0 0; text-align: center; position: relative; overflow: hidden; }
+  .m-hero::before { content:''; position:absolute; top:60px; left:50%; transform:translateX(-50%); width:640px; height:640px; max-width:150vw; background: radial-gradient(circle, rgba(160,120,64,0.10), transparent 65%); pointer-events:none; }
+  .portrait { position: relative; width: 220px; height: 220px; margin: 0 auto 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 96px; box-shadow: 0 30px 60px -26px rgba(24,22,15,0.4); border: 6px solid var(--cream); background: linear-gradient(150deg, #EBD9C7, #D9B99A); }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 16px; }
+  .m-hero h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(48px, 8vw, 84px); line-height: 1; letter-spacing: -2px; margin-bottom: 14px; }
+  .dates { font-family: 'Fraunces', serif; font-style: italic; font-size: 20px; color: var(--gold); margin-bottom: 8px; }
+  .kind { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  /* candle bar */
+  .candle-bar { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 40px 0 10px; flex-wrap: wrap; }
+  .big-candle { display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--cream); border: none; cursor: pointer; padding: 15px 28px; border-radius: 100px; font-family: 'Inter'; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; transition: transform 0.2s, background 0.2s; }
+  .big-candle:hover { transform: translateY(-2px); }
+  .big-candle.lit { background: var(--gold); }
+  .ghost { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--cream-3); border-radius: 100px; padding: 15px 24px; cursor: pointer; font-family: 'Inter'; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-2); transition: border-color 0.2s, background 0.2s; }
+  .ghost:hover { border-color: var(--gold-soft); background: var(--cream-2); }
+  .candle-count { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .candle-count strong { color: var(--gold); }
+
+  .divider { width: 40px; height: 1px; background: var(--gold); opacity: 0.5; margin: 56px auto; }
+
+  /* story */
+  .story { }
+  .story h2 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); text-align: center; margin-bottom: 26px; }
+  .story p { font-family: 'Fraunces', serif; font-size: 21px; line-height: 1.75; font-weight: 300; color: var(--ink-2); margin-bottom: 22px; }
+  .story p:first-of-type { font-style: italic; }
+
+  /* gallery mock */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 44px 0; }
+  .gallery span { aspect-ratio: 1; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: linear-gradient(150deg, #EBD9C7, #D9B99A); }
+  .gallery span:nth-child(2){ background: linear-gradient(150deg,#E7D3A8,#C9AE7A);}
+  .gallery span:nth-child(3){ background: linear-gradient(150deg,#DDD3C4,#BFC3A6);}
+
+  /* guestbook */
+  .guest { margin-top: 10px; }
+  .guest h2 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); text-align: center; margin-bottom: 26px; }
+  .msg { background: var(--cream-2); border: 1px solid rgba(24,22,15,0.06); border-radius: 18px; padding: 20px 22px; margin-bottom: 14px; }
+  .msg .who { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .msg .who span { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 8px; }
+  .msg p { font-size: 15px; line-height: 1.6; color: var(--ink-2); font-weight: 300; }
+  .leave { width: 100%; background: var(--cream-2); border: 1px solid var(--cream-3); border-radius: 16px; padding: 16px 18px; font-family: 'Inter'; font-size: 15px; color: var(--ink); outline: none; resize: vertical; min-height: 80px; margin-top: 10px; }
+  .leave:focus { border-color: var(--gold); }
+  .leave-btn { margin-top: 12px; }
+  .btn-primary { background: var(--gold); color: var(--cream); padding: 13px 26px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; border: none; cursor: pointer; transition: transform 0.2s, background 0.2s; display: inline-block; }
+  .btn-primary:hover { transform: translateY(-1px); background: var(--gold-soft); }
+
+  /* app cta */
+  .appcta { margin: 70px 0 0; background: linear-gradient(120deg,#201C14,#2A2620); color: var(--cream); border-radius: 28px; padding: 54px 40px; text-align: center; position: relative; overflow: hidden; }
+  .appcta::before { content:''; position:absolute; top:-40%; left:50%; transform:translateX(-50%); width:600px; height:600px; background: radial-gradient(circle, rgba(160,120,64,0.18), transparent 65%); }
+  .appcta h2 { position: relative; font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(26px,4vw,38px); letter-spacing: -1px; margin-bottom: 12px; }
+  .appcta h2 em { font-style: italic; color: var(--gold-soft); }
+  .appcta p { position: relative; color: rgba(244,239,230,0.72); font-weight: 300; max-width: 400px; margin: 0 auto 26px; line-height: 1.6; }
+  .appcta .btn-primary { position: relative; }
+
+  footer { background: var(--cream-2); border-top: 1px solid rgba(24,22,15,0.07); padding: 40px 0; margin-top: 60px; text-align: center; }
+  .footer-bottom { color: var(--muted); font-size: 13px; }
+
+  .mock-badge { position: fixed; bottom: 16px; right: 16px; z-index: 200; background: var(--ink); color: var(--cream); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 8px 14px; border-radius: 100px; opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<nav><div class="inner">
+  <a href="/" class="logo">Anivo</a>
+  <a href="/garden" class="back">← The Garden</a>
+</div></nav>
+
+<header class="m-hero">
+  <div class="container">
+    <div class="portrait">🐈</div>
+    <div class="eyebrow">In Loving Memory</div>
+    <h1>Luna</h1>
+    <div class="dates">2011 — 2024 · thirteen years</div>
+    <div class="kind">Cat · Ragdoll · Istanbul</div>
+
+    <div class="candle-bar">
+      <button class="big-candle" id="candle">🕯 Light a candle</button>
+      <button class="ghost">🌸 Leave a flower</button>
+      <button class="ghost">↗ Share</button>
+    </div>
+    <div class="candle-count"><strong id="count">342</strong> candles lit in Luna's memory</div>
+  </div>
+</header>
+
+<div class="divider"></div>
+
+<main class="container">
+  <section class="story">
+    <h2>Her Story</h2>
+    <p>Luna arrived on a cold February morning, a ball of cloud that fit in one hand and decided, immediately, that the warmest spot in the house belonged to her.</p>
+    <p>For thirteen years she was the quiet heart of our home — waiting on the windowsill at 6pm, curling at the foot of the bed, appearing the moment anyone was sad. She never asked for much. A sunbeam. A lap. To be near.</p>
+    <p>She left the way she lived: gently, and on her own terms. The house is quieter now, but the windowsill still catches the evening light, and we still look for her there.</p>
+
+    <div class="gallery">
+      <span>📷</span><span>📷</span><span>📷</span>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="guest">
+    <h2>Guestbook</h2>
+    <div class="msg">
+      <div class="who">Elif <span>· 3 days ago</span></div>
+      <p>She used to greet me at the door every time I visited. The gentlest soul. Rest well, Luna. 🤍</p>
+    </div>
+    <div class="msg">
+      <div class="who">Deniz <span>· 1 week ago</span></div>
+      <p>Lit a candle for Luna today. Thank you for all the years of comfort you gave this family.</p>
+    </div>
+    <div class="msg">
+      <div class="who">Anonymous <span>· 2 weeks ago</span></div>
+      <p>Found this page and cried. What a beautiful life. Sending love across the bridge.</p>
+    </div>
+
+    <textarea class="leave" placeholder="Leave a memory or a message…"></textarea>
+    <button class="btn-primary leave-btn" onclick="alert('Mockup — the guestbook saves once we wire the backend.'); return false;">Sign the guestbook</button>
+  </section>
+
+  <section class="appcta">
+    <h2>Keep Luna close, <em>forever</em></h2>
+    <p>This page is her public memorial. In the Anivo app, hold every photo, voice note and memory of her in one private keepsake that's always with you.</p>
+    <a href="#" class="btn-primary">Download Anivo</a>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-bottom">© 2026 Anivo · A keepsake for those who stay in our hearts.</div>
+</footer>
+
+<div class="mock-badge">Mockup · sample memorial</div>
+
+<script>
+  const c = document.getElementById('candle');
+  const n = document.getElementById('count');
+  c.addEventListener('click', () => {
+    if (c.classList.contains('lit')) return;
+    c.classList.add('lit');
+    c.textContent = '🕯 Candle lit';
+    n.textContent = parseInt(n.textContent,10) + 1;
+  });
+</script>
+</body>
+</html>
