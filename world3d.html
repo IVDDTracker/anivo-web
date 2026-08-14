@@ -4,655 +4,797 @@
 <meta charset="utf-8">
 <link rel="icon" type="image/jpeg" href="/favicon.jpeg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Wander a serene 3D memorial valley — mountains, a lake, a river and a path where beloved pets rest under soft light. A benefit for Anivo Lifetime members.">
-<title>The Garden of Light — Anivo</title>
+<meta name="description" content="A bright, gentle rainbow meadow where beloved pets rest — each with a photo, a name and a few words. Choose the place they loved and lay a little grave. A benefit for Anivo members.">
+<title>The Rainbow Meadow — Anivo</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root { --cream:#F4EFE6; --ink:#18160F; --ink-2:#2A2620; --cream-2:#EAE4D8; --cream-3:#D4CFC6; --gold:#C6A15B; }
+  :root { --cream:#FBF7EF; --ink:#20242E; --ink-2:#3A3E48; --line:#E4DCCB; --gold:#E4A93C; --pink:#EE7BA8; --sky:#BFE3F5; }
   html,body { height:100%; }
-  body { font-family:'Inter',sans-serif; background:#0d1018; color:var(--ink); overflow:hidden; -webkit-font-smoothing:antialiased; }
+  body { font-family:'Inter',sans-serif; background:#BFE3F5; color:var(--ink); overflow:hidden; -webkit-font-smoothing:antialiased; }
   canvas { display:block; }
-  .bar { position:fixed; top:0; left:0; right:0; z-index:40; display:flex; align-items:center; justify-content:space-between; padding:18px 26px; background:linear-gradient(180deg, rgba(8,10,16,0.45), transparent); }
-  .logo { font-family:'Fraunces',serif; font-weight:600; font-size:22px; font-style:italic; color:#fff; text-decoration:none; text-shadow:0 2px 10px rgba(0,0,0,0.4); }
-  .logo::after { content:'·'; color:var(--gold); margin-left:6px; }
-  .pill { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#fff; background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.24); padding:9px 16px; border-radius:100px; text-decoration:none; cursor:pointer; backdrop-filter:blur(6px); }
-  .pill.solid { background:var(--gold); color:#2a2110; border-color:transparent; }
-  .pill .lock { opacity:0.85; margin-right:5px; }
-  .hint { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:35; color:#fff; font-size:11px; letter-spacing:2px; text-transform:uppercase; background:rgba(8,10,16,0.4); padding:10px 18px; border-radius:100px; backdrop-filter:blur(6px); transition:opacity .6s; }
-  #tip { position:fixed; z-index:36; pointer-events:none; font-family:'Fraunces',serif; font-style:italic; font-size:17px; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,0.6); opacity:0; transition:opacity .15s; transform:translate(-50%,-150%); white-space:nowrap; }
-  #tip small { display:block; font-family:'Inter'; font-style:normal; font-size:10px; letter-spacing:1px; color:rgba(255,255,255,0.75); text-align:center; }
-  .veil { position:fixed; inset:0; z-index:60; background:radial-gradient(120% 90% at 50% 35%, #dfeaf7, #b9cfe6 55%, #e7c79c 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; transition:opacity 1.1s ease, visibility 1.1s; color:#22283a; }
+  .bar { position:fixed; top:0; left:0; right:0; z-index:40; display:flex; align-items:center; justify-content:space-between; padding:16px 24px; background:linear-gradient(180deg, rgba(255,255,255,0.4), transparent); }
+  .logo { font-family:'Fraunces',serif; font-weight:600; font-size:22px; font-style:italic; color:#31465a; text-decoration:none; text-shadow:0 1px 6px rgba(255,255,255,0.5); }
+  .logo::after { content:'·'; color:var(--pink); margin-left:6px; }
+  .top-actions { display:flex; gap:10px; align-items:center; }
+  .pill { font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#31465a; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.9); padding:10px 16px; border-radius:100px; text-decoration:none; cursor:pointer; backdrop-filter:blur(6px); box-shadow:0 6px 18px -10px rgba(40,60,90,0.4); transition:transform .15s; }
+  .pill:hover { transform:translateY(-1px); }
+  .pill.solid { background:linear-gradient(120deg,var(--pink),var(--gold)); color:#fff; border-color:transparent; }
+  .hint { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:35; color:#31465a; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; background:rgba(255,255,255,0.6); padding:10px 18px; border-radius:100px; backdrop-filter:blur(6px); transition:opacity .6s; }
+  #tip { position:fixed; z-index:36; pointer-events:none; font-family:'Fraunces',serif; font-style:italic; font-size:17px; color:#2b3648; text-shadow:0 1px 8px rgba(255,255,255,0.8); opacity:0; transition:opacity .15s; transform:translate(-50%,-160%); white-space:nowrap; text-align:center; }
+  #tip small { display:block; font-family:'Inter'; font-style:normal; font-size:10px; letter-spacing:1px; color:#5a6474; }
+  .veil { position:fixed; inset:0; z-index:60; background:linear-gradient(180deg,#cdeafb 0%,#e9f3d8 60%,#fbe7c6 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; transition:opacity 1s ease, visibility 1s; color:#2b3648; overflow:hidden; }
   .veil.gone { opacity:0; visibility:hidden; }
-  .veil .eyebrow { font-size:11px; letter-spacing:4px; text-transform:uppercase; color:#9a7a3e; margin-bottom:20px; }
-  .veil h1 { font-family:'Fraunces',serif; font-weight:400; font-size:clamp(40px,7vw,78px); line-height:1.02; letter-spacing:-2px; margin-bottom:22px; }
-  .veil h1 em { font-style:italic; color:var(--gold); font-weight:300; }
-  .veil p { color:#4b556b; font-weight:300; max-width:470px; margin:0 auto 34px; line-height:1.7; font-size:17px; }
-  .enter { background:#22283a; color:var(--cream); border:none; cursor:pointer; padding:16px 34px; border-radius:100px; font-family:'Inter'; font-size:12px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; transition:transform .2s; box-shadow:0 16px 34px -16px rgba(20,24,40,0.5); }
+  .veil .eyebrow { font-size:11px; letter-spacing:4px; text-transform:uppercase; color:#c76d97; margin-bottom:18px; z-index:2; }
+  .veil h1 { font-family:'Fraunces',serif; font-weight:400; font-size:clamp(38px,7vw,74px); line-height:1.03; letter-spacing:-2px; margin-bottom:20px; z-index:2; }
+  .veil h1 em { font-style:italic; background:linear-gradient(90deg,#ee7ba8,#e4a93c,#7ec8a0,#7bb6e8); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; font-weight:300; }
+  .veil p { color:#4b556b; font-weight:300; max-width:460px; margin:0 auto 32px; line-height:1.7; font-size:17px; z-index:2; }
+  .enter { background:linear-gradient(120deg,#ee7ba8,#e4a93c); color:#fff; border:none; cursor:pointer; padding:16px 34px; border-radius:100px; font-family:'Inter'; font-size:12px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; transition:transform .2s; box-shadow:0 16px 34px -14px rgba(200,110,150,0.6); z-index:2; }
   .enter:hover { transform:translateY(-2px); }
-  .veil-arc { position:absolute; bottom:-26%; left:50%; transform:translateX(-50%); width:1000px; height:1000px; max-width:160vw; border-radius:50%;
-    background:conic-gradient(from 180deg at 50% 50%, transparent 0deg,#c9a7d6 7deg,#a7c4e6 15deg,#a9d6b0 23deg,#e8dca0 31deg,#f0c79a 39deg,#e6a8a2 47deg,transparent 55deg);
-    -webkit-mask:radial-gradient(circle, transparent 63%, #000 63.4%, #000 70%, transparent 70.4%);
-            mask:radial-gradient(circle, transparent 63%, #000 63.4%, #000 70%, transparent 70.4%);
-    opacity:.5; filter:blur(2px); pointer-events:none; }
-  .loading { position:fixed; inset:0; z-index:70; background:#11151f; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.6); font-size:13px; letter-spacing:2px; text-transform:uppercase; transition:opacity .6s; }
-  .modal-bg { position:fixed; inset:0; z-index:80; background:rgba(15,18,26,0.5); backdrop-filter:blur(5px); display:none; align-items:center; justify-content:center; padding:24px; }
-  .modal-bg.open { display:flex; }
-  .modal { position:relative; background:var(--cream); color:var(--ink); width:100%; max-width:430px; border-radius:26px; overflow:hidden; box-shadow:0 40px 90px -30px rgba(0,0,0,0.6); }
-  .modal .top { padding:34px 30px 26px; text-align:center; background:linear-gradient(150deg,#f3e7d2,#e6cba6); }
-  .modal .top .pet { font-size:68px; filter:drop-shadow(0 6px 10px rgba(0,0,0,0.12)); }
-  .modal .top h3 { font-family:'Fraunces',serif; font-weight:400; font-size:34px; letter-spacing:-1px; margin-top:6px; }
-  .modal .top .yrs { font-family:'Fraunces'; font-style:italic; color:#6b5636; font-size:15px; margin-top:4px; }
-  .modal .mid { padding:26px 30px; }
-  .modal .mid p { font-family:'Fraunces',serif; font-style:italic; font-size:17px; line-height:1.65; color:var(--ink-2); font-weight:300; text-align:center; }
-  .modal .stats { display:flex; justify-content:center; gap:8px; margin-top:22px; }
-  .modal .stats button { background:#18160F; color:var(--cream); border:none; cursor:pointer; padding:12px 20px; border-radius:100px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
-  .modal .stats button.ghost { background:transparent; color:var(--ink-2); border:1px solid var(--cream-3); }
-  .modal .visit { display:block; text-align:center; padding:16px; background:var(--cream-2); color:var(--ink-2); text-decoration:none; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
-  .modal .close { position:absolute; top:18px; right:20px; z-index:2; background:rgba(0,0,0,0.3); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; }
-  .mock-badge { position:fixed; bottom:16px; right:16px; z-index:45; background:rgba(8,10,16,0.55); color:#fff; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:8px 14px; border-radius:100px; }
-  .form-bg { position:fixed; inset:0; z-index:85; background:rgba(15,18,26,0.55); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:24px; }
-  .form-bg.open { display:flex; }
-  .form { background:var(--cream); color:var(--ink); width:100%; max-width:440px; border-radius:26px; overflow:hidden; box-shadow:0 40px 90px -30px rgba(0,0,0,0.6); max-height:92vh; overflow-y:auto; }
-  .form .top { padding:26px 30px 20px; text-align:center; background:linear-gradient(150deg,#f3e7d2,#e6cba6); }
-  .form .top h3 { font-family:'Fraunces',serif; font-weight:400; font-size:29px; letter-spacing:-0.5px; }
-  .form .top p { font-size:13px; color:#6b5636; margin-top:6px; font-family:'Fraunces'; font-style:italic; }
-  .form .body { padding:22px 26px 26px; display:flex; flex-direction:column; gap:15px; }
-  .form label { font-size:10.5px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#8a7c5f; display:block; margin-bottom:8px; }
-  .emoji { display:flex; gap:8px; flex-wrap:wrap; }
-  .emoji-b { font-size:23px; width:44px; height:44px; border-radius:12px; border:1.5px solid var(--cream-3); background:#fff; cursor:pointer; display:grid; place-items:center; transition:.12s; }
-  .emoji-b.on { border-color:var(--gold); background:#fbf3e2; transform:scale(1.06); }
-  .form input, .form textarea { width:100%; border:1.5px solid var(--cream-3); border-radius:12px; padding:12px 14px; font-family:'Inter'; font-size:15px; color:var(--ink); background:#fff; }
-  .form textarea { font-family:'Fraunces',serif; font-style:italic; resize:vertical; min-height:66px; }
-  .form input:focus, .form textarea:focus { outline:none; border-color:var(--gold); }
-  .form .place { background:#18160F; color:var(--cream); border:none; cursor:pointer; padding:15px; border-radius:100px; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-top:4px; transition:transform .18s; }
-  .form .place:hover { transform:translateY(-2px); }
-  .form .cancel { background:transparent; border:none; color:#8a7c5f; font-size:12px; letter-spacing:1px; cursor:pointer; padding:6px; }
+  .veil-rainbow { position:absolute; bottom:-30%; left:50%; transform:translateX(-50%); width:1100px; height:1100px; max-width:170vw; border-radius:50%;
+    background:conic-gradient(from 180deg at 50% 50%, transparent 0deg,#ee7ba8 8deg,#f3a24e 16deg,#f2d94e 24deg,#8fd89a 32deg,#7bb6e8 40deg,#b79be0 48deg,transparent 56deg);
+    -webkit-mask:radial-gradient(circle, transparent 60%, #000 60.4%, #000 72%, transparent 72.4%);
+            mask:radial-gradient(circle, transparent 60%, #000 60.4%, #000 72%, transparent 72.4%);
+    opacity:.6; filter:blur(1px); pointer-events:none; }
+  .loading { position:fixed; inset:0; z-index:70; background:linear-gradient(180deg,#cdeafb,#e9f3d8); display:flex; align-items:center; justify-content:center; color:#5a6474; font-size:13px; letter-spacing:2px; text-transform:uppercase; transition:opacity .6s; }
+
+  .modal-bg, .form-bg { position:fixed; inset:0; z-index:80; background:rgba(35,45,60,0.4); backdrop-filter:blur(5px); display:none; align-items:center; justify-content:center; padding:24px; }
+  .modal-bg.open, .form-bg.open { display:flex; }
+  .modal, .form { position:relative; background:var(--cream); color:var(--ink); width:100%; max-width:430px; border-radius:26px; overflow:hidden; box-shadow:0 40px 90px -30px rgba(0,0,0,0.5); }
+  .form { max-width:450px; max-height:92vh; overflow-y:auto; }
+  .modal .top { padding:30px 30px 24px; text-align:center; background:linear-gradient(150deg,#fde3ec,#ffe9c9); }
+  .modal .photo-ring { width:104px; height:104px; margin:0 auto 8px; border-radius:50%; background:#fff; padding:5px; box-shadow:0 8px 22px -8px rgba(0,0,0,0.25); }
+  .modal .photo-ring > div { width:100%; height:100%; border-radius:50%; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; font-size:46px; background-color:#f0e6d6; }
+  .modal .top h3 { font-family:'Fraunces',serif; font-weight:400; font-size:32px; letter-spacing:-1px; margin-top:6px; }
+  .modal .top .yrs { font-family:'Fraunces'; font-style:italic; color:#a05f7e; font-size:15px; margin-top:3px; }
+  .modal .top .place { display:inline-block; margin-top:10px; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#8a6d3b; background:rgba(255,255,255,0.6); padding:5px 12px; border-radius:100px; }
+  .modal .mid { padding:24px 30px 28px; }
+  .modal .mid p { font-family:'Fraunces',serif; font-style:italic; font-size:18px; line-height:1.65; color:var(--ink-2); font-weight:300; text-align:center; }
+  .modal .mid .empty { color:#9aa0ab; font-size:14px; }
+  .modal .close, .form .close { position:absolute; top:16px; right:18px; z-index:2; background:rgba(0,0,0,0.18); color:#fff; border:none; width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:18px; line-height:1; }
+
+  .form .top { padding:24px 30px 18px; text-align:center; background:linear-gradient(150deg,#fde3ec,#ffe9c9); }
+  .form .top h3 { font-family:'Fraunces',serif; font-weight:400; font-size:28px; letter-spacing:-0.5px; }
+  .form .top p { font-size:13px; color:#a05f7e; margin-top:5px; font-family:'Fraunces'; font-style:italic; }
+  .form .body { padding:20px 26px 24px; display:flex; flex-direction:column; gap:14px; }
+  .field label { display:block; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#7c8492; margin-bottom:6px; }
+  .field input[type=text], .field textarea { width:100%; border:1px solid var(--line); background:#fff; border-radius:12px; padding:12px 14px; font-family:'Inter'; font-size:14px; color:var(--ink); resize:none; }
+  .field input:focus, .field textarea:focus { outline:none; border-color:var(--pink); }
+  .row2 { display:flex; gap:12px; }
+  .row2 .field { flex:1; }
+  .counter { text-align:right; font-size:11px; color:#9aa0ab; margin-top:4px; }
+  .photo-pick { display:flex; align-items:center; gap:14px; }
+  .photo-pick .prev { width:70px; height:70px; border-radius:50%; background:#f0e6d6 center/cover no-repeat; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:30px; box-shadow:inset 0 0 0 1px var(--line); }
+  .photo-pick .pbtn { font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#31465a; background:#fff; border:1px solid var(--line); border-radius:100px; padding:11px 16px; cursor:pointer; }
+  .zones { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
+  .zone { cursor:pointer; border:1.5px solid var(--line); background:#fff; border-radius:14px; padding:11px 6px; text-align:center; transition:all .12s; }
+  .zone.sel { border-color:var(--pink); background:#fdeef4; }
+  .zone .z-e { font-size:24px; }
+  .zone .z-l { display:block; font-size:11px; font-weight:600; color:var(--ink-2); margin-top:3px; }
+  .zone .z-h { display:block; font-size:9px; color:#9aa0ab; margin-top:1px; }
+  .save { margin-top:4px; background:linear-gradient(120deg,#ee7ba8,#e4a93c); color:#fff; border:none; cursor:pointer; padding:15px; border-radius:100px; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; box-shadow:0 14px 30px -14px rgba(200,110,150,0.6); }
+  .save:disabled { opacity:.5; cursor:not-allowed; }
+  .form .note { text-align:center; font-size:11px; color:#9aa0ab; padding:0 26px 20px; line-height:1.5; }
+  @media (max-width:520px){ .bar{padding:14px 16px} .logo{font-size:19px} .pill{padding:9px 12px} }
 </style>
 </head>
 <body>
 
-<div class="bar">
-  <a href="/" class="logo">Anivo</a>
-  <a class="pill solid" id="addBtn"><span class="lock">✦</span>Add your companion</a>
-</div>
-
-<div class="loading" id="loading">Shaping the valley…</div>
+<div class="loading" id="loading">Opening the meadow…</div>
 
 <div class="veil" id="veil">
-  <div class="veil-arc"></div>
-  <div style="position:relative;z-index:2">
-    <div class="eyebrow">The Garden of Light · Anivo Lifetime</div>
-    <h1>A whole world<br>where they <em>rest</em></h1>
-    <p>A valley beyond the Rainbow Bridge — mountains, a still lake, a winding river and a quiet path. Walk it, find their resting place, and light a candle.</p>
-    <button class="enter" id="enter">Enter the valley →</button>
+  <div class="veil-rainbow"></div>
+  <div class="eyebrow">A place in the light</div>
+  <h1>The <em>Rainbow&nbsp;Meadow</em></h1>
+  <p>A bright, gentle world under one great rainbow. Bring a photo, a name and a few kind words — and lay a little grave in the place they loved most.</p>
+  <button class="enter" id="enterBtn">Step into the meadow</button>
+</div>
+
+<div class="bar">
+  <a href="/" class="logo">Anivo</a>
+  <div class="top-actions">
+    <a class="pill" id="addBtn">＋ Add your companion</a>
+    <a href="/" class="pill solid">Anivo</a>
   </div>
 </div>
 
+<div class="hint" id="hint">Drag to look around · scroll to zoom · click a grave</div>
 <div id="tip"></div>
-<div class="hint" id="hint">Drag to look around · scroll to zoom · click a memorial</div>
 
-<div class="modal-bg" id="modalbg">
+<!-- Memorial card -->
+<div class="modal-bg" id="modalBg">
   <div class="modal">
-    <button class="close" id="mclose">×</button>
-    <div class="top"><div class="pet" id="m-pet">🐈</div><h3 id="m-name">Luna</h3><div class="yrs" id="m-yrs">2011 – 2024</div></div>
-    <div class="mid">
-      <p id="m-ep">“The quiet warmth at the foot of every bed.”</p>
-      <div class="stats">
-        <button id="m-candle">🕯 Light a candle · <span id="m-cc">342</span></button>
-        <button class="ghost">🌸 Flower</button>
-      </div>
+    <button class="close" id="modalClose">×</button>
+    <div class="top">
+      <div class="photo-ring"><div id="mPhoto"></div></div>
+      <h3 id="mName">—</h3>
+      <div class="yrs" id="mYrs"></div>
+      <div class="place" id="mPlace"></div>
     </div>
-    <a href="/memorial-luna" class="visit">Visit the full memorial →</a>
+    <div class="mid"><p id="mMsg"></p></div>
   </div>
 </div>
 
-<div class="form-bg" id="formbg">
+<!-- Add form -->
+<div class="form-bg" id="formBg">
   <div class="form">
-    <div class="top"><h3>Add your companion</h3><p>They'll rest in the garden, lit forever.</p></div>
-    <div class="body">
-      <div><label>Who were they?</label><div class="emoji" id="emoji"></div></div>
-      <div><label>Name</label><input id="f-name" maxlength="24" placeholder="Their name" autocomplete="off"></div>
-      <div><label>Years together</label><input id="f-yrs" maxlength="20" placeholder="2018 – 2025" autocomplete="off"></div>
-      <div><label>A few words</label><textarea id="f-ep" maxlength="140" placeholder="Something you'll always remember…"></textarea></div>
-      <button class="place" id="f-place" type="button">🕯 Place in the garden</button>
-      <button class="cancel" id="f-cancel" type="button">Not now</button>
+    <button class="close" id="formClose">×</button>
+    <div class="top">
+      <h3>Add your companion</h3>
+      <p>They rest here, always in the light.</p>
     </div>
+    <div class="body">
+      <div class="field">
+        <label>Photo</label>
+        <div class="photo-pick">
+          <div class="prev" id="fPrev">🐾</div>
+          <button class="pbtn" id="fPhotoBtn">Choose photo</button>
+          <input type="file" id="fPhoto" accept="image/*" style="display:none">
+        </div>
+      </div>
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="fName" maxlength="24" placeholder="Luna">
+      </div>
+      <div class="row2">
+        <div class="field"><label>Born</label><input type="text" id="fBorn" maxlength="12" placeholder="2015"></div>
+        <div class="field"><label>Passed</label><input type="text" id="fPassed" maxlength="12" placeholder="2024"></div>
+      </div>
+      <div class="field">
+        <label>A few words</label>
+        <textarea id="fMsg" rows="3" maxlength="200" placeholder="The softest heart. You waited by the door every evening…"></textarea>
+        <div class="counter"><span id="fCount">0</span>/200</div>
+      </div>
+      <div class="field">
+        <label>The place they loved</label>
+        <div class="zones" id="fZones"></div>
+      </div>
+      <button class="save" id="fSave" disabled>Lay the grave 🌈</button>
+    </div>
+    <div class="note">Saved privately in this browser. It stays here for you to visit.</div>
   </div>
 </div>
-
-<div class="mock-badge">Saved on this device</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script>
-const PETS = [
-  { pet:'🐈', name:'Luna',  yrs:'2011 – 2024', ep:'“The quiet warmth at the foot of every bed.”', cc:342 },
-  { pet:'🐕', name:'Max',   yrs:'2009 – 2023', ep:'“He met us at the door for fourteen years.”', cc:511 },
-  { pet:'🐇', name:'Coco',  yrs:'2018 – 2024', ep:'“Small paws, enormous heart.”', cc:96 },
-  { pet:'🐕', name:'Bella', yrs:'2012 – 2024', ep:'“Every walk was an adventure with her.”', cc:388 },
-  { pet:'🐦', name:'Kiwi',  yrs:'2007 – 2023', ep:'“Still hear her good-mornings sometimes.”', cc:132 },
-  { pet:'🐈', name:'Simba', yrs:'2013 – 2025', ep:'“King of the windowsill, and of our hearts.”', cc:274 },
-  { pet:'🐩', name:'Pamuk', yrs:'2014 – 2024', ep:'“Soft as the name we gave her.”', cc:143 },
-  { pet:'🐈', name:'Mısır', yrs:'2015 – 2025', ep:'“Found us on a rainy street. Stayed forever.”', cc:167 },
-  { pet:'🐕', name:'Rocky', yrs:'2010 – 2022', ep:'“Bravest soul in the smallest fears.”', cc:205 },
-  { pet:'🐢', name:'Kaplan',yrs:'2001 – 2024', ep:'“Slow, steady, endlessly loved.”', cc:88 },
+/* ============================================================================
+   THE RAINBOW MEADOW — Anivo
+   One big rainbow over a bright, uncluttered world of little places (park, sea,
+   flower field, lake, meadow, creek). Each pet gets a prominent gravestone with
+   a round photo, a name, birth & passing years, and a short message on click.
+   Bury a companion in the place it loved. Saved in localStorage.
+
+   Note: three.js is loaded from CDN; each builder is wrapped in try/catch so a
+   single failure never takes down the core world (ground + rainbow + graves).
+   ============================================================================ */
+
+var STORE_KEY = 'anivo_pets_v3';
+
+// ---- Zones (the places) ----------------------------------------------------
+var ZONES = {
+  park:   { label:'Park',   emoji:'🌳', hint:'shade & play', cx:-40, cz:-34, tint:0x8fd89a },
+  sea:    { label:'Sea',    emoji:'🌊', hint:'waves & sand', cx: 48, cz:-30, tint:0x7ec6e8 },
+  flowers:{ label:'Flowers',emoji:'🌸', hint:'a field of color', cx:-52, cz: 30, tint:0xf3a9cf },
+  lake:   { label:'Lake',   emoji:'🪷', hint:'still water', cx: 6,  cz: 50, tint:0x86c9d6 },
+  meadow: { label:'Meadow', emoji:'🌾', hint:'golden grass', cx: 50, cz: 38, tint:0xe8cf74 },
+  creek:  { label:'Creek',  emoji:'🏞️', hint:'a little stream', cx:-8, cz:-56, tint:0x9bd6c0 }
+};
+
+// ---- Sample residents so the meadow is never empty -------------------------
+var DEFAULTS = [
+  { id:'s1', name:'Luna', born:'2013', passed:'2024', zone:'lake',    msg:'The gentlest soul. You slept in the sunniest square of the floor and made every morning kind.', photo:'', x:0, z:0 },
+  { id:'s2', name:'Max',  born:'2011', passed:'2023', zone:'park',    msg:'You chased every ball like it was the first one. Fifteen good years, buddy.', photo:'', x:0, z:0 },
+  { id:'s3', name:'Zeytin', born:'2016', passed:'2025', zone:'sea',   msg:'You ran into every wave without fear. The beach isn’t the same.', photo:'', x:0, z:0 },
+  { id:'s4', name:'Pamuk', born:'2014', passed:'2024', zone:'flowers',msg:'Soft as your name. You sat among the flowers like you belonged to them.', photo:'', x:0, z:0 },
+  { id:'s5', name:'Boncuk',born:'2012', passed:'2022', zone:'meadow', msg:'Little shadow of the fields. You always found the warmest patch of sun.', photo:'', x:0, z:0 }
 ];
 
-let scene, camera, renderer, controls, composer, raycaster, mouse, clock;
-const graves = [], clickable = []; let hovered = null;
-const LAKE = { x: 32, z: 8, r: 15 };
-const MAT = {};
+// ============================================================================
+var scene, camera, renderer, controls, raycaster, mouse;
+var graveGroups = [];   // clickable grave root groups (userData.pet)
+var animators = [];     // per-frame update fns
+var tipEl = document.getElementById('tip');
+var hoverPet = null;
 
-function terrainH(x, z){
-  let h = Math.sin(x*0.075)*1.0 + Math.cos(z*0.07)*0.9 + Math.sin((x+z)*0.045)*1.1;
-  h += Math.max(0, (-z - 34)) * 0.16;              // foothills rising to the back
-  h += Math.max(0, (Math.abs(x) - 40)) * 0.10;     // sides rise toward mountains
-  const dl = Math.hypot(x - LAKE.x, z - LAKE.z);   // lake basin
-  if (dl < LAKE.r + 2) h = Math.min(h, -1.8) - Math.max(0, (LAKE.r - dl)) * 0.13;
-  return h;
+function rand(a,b){ return a + Math.random()*(b-a); }
+function safe(name, fn){ try { fn(); } catch(e){ console.warn('[meadow] '+name+' failed:', e); } }
+
+// deterministic spot inside a zone for a pet id (so it never jumps between loads)
+function spotInZone(zoneKey, seed){
+  var z = ZONES[zoneKey] || ZONES.park;
+  var h = 0; for (var i=0;i<seed.length;i++){ h = (h*31 + seed.charCodeAt(i)) & 0xffff; }
+  var ang = (h % 360) * Math.PI/180;
+  var rad = 6 + (h % 11);
+  return { x: z.cx + Math.cos(ang)*rad, z: z.cz + Math.sin(ang)*rad };
 }
 
-function gradientTexture(stops){
-  const c = document.createElement('canvas'); c.width = 4; c.height = 256;
-  const ctx = c.getContext('2d'); const g = ctx.createLinearGradient(0,0,0,256);
-  stops.forEach(s => g.addColorStop(s[0], s[1])); ctx.fillStyle = g; ctx.fillRect(0,0,4,256);
-  return new THREE.CanvasTexture(c);
+// ---- storage ---------------------------------------------------------------
+function loadPets(){
+  var arr;
+  try { arr = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch(e){ arr = null; }
+  if (!arr || !arr.length) { arr = DEFAULTS.slice(); }
+  arr.forEach(function(p){
+    if (!p.id) p.id = 'p'+Date.now()+Math.floor(Math.random()*1000);
+    if (typeof p.x !== 'number' || typeof p.z !== 'number' || (p.x===0 && p.z===0)) {
+      var s = spotInZone(p.zone, p.id); p.x = s.x; p.z = s.z;
+    }
+  });
+  return arr;
+}
+function savePets(arr){
+  try {
+    var slim = arr.map(function(p){ return {id:p.id,name:p.name,born:p.born,passed:p.passed,zone:p.zone,msg:p.msg,photo:p.photo,x:p.x,z:p.z}; });
+    localStorage.setItem(STORE_KEY, JSON.stringify(slim));
+  } catch(e){ console.warn('save failed', e); }
 }
 
+// ============================================================================
+// SCENE
+// ============================================================================
 function init(){
   scene = new THREE.Scene();
-  scene.background = gradientTexture([[0,'#34517e'],[0.4,'#6f8fb4'],[0.68,'#d7ab7a'],[1,'#e0a15f']]);
-  scene.fog = new THREE.Fog(0x9fb2cc, 70, 340);
+  scene.background = new THREE.Color(0xbfe3f5);
+  scene.fog = new THREE.Fog(0xcfe9f7, 90, 190);
 
-  camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 900);
-  camera.position.set(-6, 13, 44);
+  camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 600);
+  camera.position.set(0, 26, 74);
 
   renderer = new THREE.WebGLRenderer({ antialias:true });
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.98;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   document.body.appendChild(renderer.domElement);
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true; controls.dampingFactor = 0.06;
-  controls.target.set(2, 2, 2);
-  controls.minDistance = 10; controls.maxDistance = 130;
-  controls.maxPolarAngle = Math.PI * 0.495;
-  controls.autoRotate = true; controls.autoRotateSpeed = 0.22;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.minDistance = 14;
+  controls.maxDistance = 150;
+  controls.maxPolarAngle = Math.PI/2 - 0.05;
+  controls.target.set(0, 4, 0);
 
-  // lighting — warm golden key + cool sky fill, real contrast
-  scene.add(new THREE.HemisphereLight(0xbcd0ec, 0x4a5f38, 0.6));
-  scene.add(new THREE.AmbientLight(0x33405c, 0.4));
-  const sun = new THREE.DirectionalLight(0xffdca0, 1.55);
-  sun.position.set(-46, 24, -34); scene.add(sun);
-  const rim = new THREE.DirectionalLight(0x9fc2ff, 0.4);
-  rim.position.set(38, 16, 40); scene.add(rim);
-  const sd = new THREE.Mesh(new THREE.SphereGeometry(5, 24, 24), new THREE.MeshBasicMaterial({ color:0xffe6b8 }));
-  sd.position.set(-70, 30, -96); scene.add(sd);
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
 
-  MAT.marble = new THREE.MeshStandardMaterial({ color:0xf0e9da, roughness:0.55, metalness:0.05 });
-  MAT.marbleDark = new THREE.MeshStandardMaterial({ color:0xdcd2bd, roughness:0.7 });
-  MAT.gold = new THREE.MeshStandardMaterial({ color:0xE3B968, roughness:0.35, metalness:0.7, emissive:0x5a3f12, emissiveIntensity:0.4 });
-  MAT.water = new THREE.MeshStandardMaterial({ color:0x3f7fae, roughness:0.14, metalness:0.55, transparent:true, opacity:0.9 });
-  MAT.rock = new THREE.MeshStandardMaterial({ color:0x7c7468, roughness:1, flatShading:true });
+  // Light — bright, soft, even (easy on the eyes)
+  safe('lights', function(){
+    var hemi = new THREE.HemisphereLight(0xffffff, 0x9fd7a6, 0.95);
+    scene.add(hemi);
+    var sun = new THREE.DirectionalLight(0xfff3dd, 0.85);
+    sun.position.set(40, 70, 30);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    var d = 110;
+    sun.shadow.camera.left=-d; sun.shadow.camera.right=d;
+    sun.shadow.camera.top=d; sun.shadow.camera.bottom=-d;
+    sun.shadow.camera.far = 260;
+    scene.add(sun);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  });
 
-  buildGround(); buildLake(); buildRiver(); buildPath(); buildMountains();
-  scatterTrees(); scatterRocksBushes(); buildGraves();
-  buildClouds(); buildBirds(); buildPetals(); buildMotes(); buildStars(); buildRainbow();
-  try { buildExtras(); } catch(e){ console.warn('buildExtras', e); }
+  safe('ground',   buildGround);
+  safe('rainbow',  buildRainbow);
+  safe('clouds',   buildClouds);
+  safe('zones',    buildZones);
+  safe('petals',   buildPetals);
 
-  try {
-    composer = new THREE.EffectComposer(renderer);
-    composer.addPass(new THREE.RenderPass(scene, camera));
-    composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.32, 0.55, 0.88));
-  } catch(e){ composer = null; }
+  // graves
+  loadPets().forEach(function(p){ safe('grave:'+p.id, function(){ placeGrave(p); }); });
 
-  raycaster = new THREE.Raycaster(); mouse = new THREE.Vector2(); clock = new THREE.Clock();
   addEventListener('resize', onResize);
   renderer.domElement.addEventListener('pointermove', onMove);
   renderer.domElement.addEventListener('click', onClick);
-  document.getElementById('loading').style.opacity='0';
-  setTimeout(()=> document.getElementById('loading').style.display='none', 600);
-  loadSaved();
+
   animate();
+  document.getElementById('loading').style.opacity = '0';
+  setTimeout(function(){ var l=document.getElementById('loading'); if(l) l.style.display='none'; }, 700);
 }
 
+// ---- Ground: a big soft-green disc with gentle rolling color ---------------
 function buildGround(){
-  const geo = new THREE.PlaneGeometry(300, 300, 170, 170); geo.rotateX(-Math.PI/2);
-  const pos = geo.attributes.position, col = [];
-  const cLow = new THREE.Color(0x3f6a2e), cMid = new THREE.Color(0x5f9243), cHigh = new THREE.Color(0x84ad5c);
-  const sand = new THREE.Color(0xcbb488), rock = new THREE.Color(0x8a8172);
-  for (let i=0;i<pos.count;i++){
-    const x = pos.getX(i), z = pos.getZ(i); const y = terrainH(x, z); pos.setY(i, y);
-    let c;
-    const dl = Math.hypot(x-LAKE.x, z-LAKE.z);
-    if (dl < LAKE.r+2.5 && y < 0.2) c = sand.clone();                 // lake shore
-    else if (y > 7) c = rock.clone().lerp(new THREE.Color(0xffffff), THREE.MathUtils.clamp((y-7)/6,0,1)); // high = rocky/snow
-    else c = cLow.clone().lerp(cMid, THREE.MathUtils.clamp((y+2)/4,0,1)).lerp(cHigh, THREE.MathUtils.clamp((y-1)/5,0,1));
-    col.push(c.r, c.g, c.b);
+  var geo = new THREE.CircleGeometry(120, 96);
+  // gentle undulation for softness
+  var pos = geo.attributes.position;
+  for (var i=0;i<pos.count;i++){
+    var x = pos.getX(i), y = pos.getY(i);
+    var r = Math.sqrt(x*x+y*y);
+    pos.setZ(i, Math.sin(x*0.05)*Math.cos(y*0.05)*1.2 - r*0.01);
   }
-  geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   geo.computeVertexNormals();
-  scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors:true, roughness:0.96 })));
+  var mat = new THREE.MeshStandardMaterial({ color:0x9be0a3, roughness:1, metalness:0 });
+  var ground = new THREE.Mesh(geo, mat);
+  ground.rotation.x = -Math.PI/2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // soft ring of a slightly deeper green at the rim (frames the world)
+  var ringMat = new THREE.MeshStandardMaterial({ color:0x86cf90, roughness:1 });
+  var ring = new THREE.Mesh(new THREE.RingGeometry(112, 122, 96), ringMat);
+  ring.rotation.x = -Math.PI/2; ring.position.y = 0.02;
+  scene.add(ring);
 }
 
-function buildLake(){
-  const geo = new THREE.CircleGeometry(LAKE.r+1.5, 48); geo.rotateX(-Math.PI/2);
-  const lake = new THREE.Mesh(geo, MAT.water);
-  lake.position.set(LAKE.x, -0.85, LAKE.z); scene.add(lake); window._lake = lake;
-}
-
-function flatRibbon(points, radius, mat, y){
-  const curve = new THREE.CatmullRomCurve3(points);
-  const geo = new THREE.TubeGeometry(curve, 140, radius, 10, false);
-  geo.scale(1, 0.035, 1);
-  const m = new THREE.Mesh(geo, mat); m.position.y = y; return m;
-}
-function buildRiver(){
-  const pts = [
-    new THREE.Vector3(-40,0,-52), new THREE.Vector3(-22,0,-34), new THREE.Vector3(-6,0,-16),
-    new THREE.Vector3(6,0,-2), new THREE.Vector3(18,0,4), new THREE.Vector3(LAKE.x-4,0,LAKE.z),
-  ];
-  scene.add(flatRibbon(pts, 2.1, MAT.water, 0.15));
-}
-function buildPath(){
-  const pathMat = new THREE.MeshStandardMaterial({ color:0xcdb78d, roughness:1 });
-  window._pathCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-4,0,30), new THREE.Vector3(-9,0,18), new THREE.Vector3(-3,0,7),
-    new THREE.Vector3(-8,0,-4), new THREE.Vector3(-2,0,-15), new THREE.Vector3(-10,0,-27),
-  ]);
-  const geo = new THREE.TubeGeometry(window._pathCurve, 120, 1.5, 10, false);
-  geo.scale(1, 0.03, 1);
-  const p = new THREE.Mesh(geo, pathMat); p.position.y = 0.16; scene.add(p);
-}
-
-function makeMountain(x, z, h, r, snow){
-  const g = new THREE.Group();
-  const rock = new THREE.Mesh(new THREE.ConeGeometry(r, h, 5 + Math.floor(Math.random()*3), 1),
-    new THREE.MeshStandardMaterial({ color:0x5a5f68, roughness:1, flatShading:true }));
-  rock.position.y = h/2; g.add(rock);
-  if (snow){
-    const cap = new THREE.Mesh(new THREE.ConeGeometry(r*0.5, h*0.34, 6, 1),
-      new THREE.MeshStandardMaterial({ color:0xeef2f7, roughness:0.8, flatShading:true }));
-    cap.position.y = h*0.83; g.add(cap);
-  }
-  g.position.set(x, terrainH(x,z)-1, z); g.rotation.y = Math.random()*Math.PI;
-  return g;
-}
-function buildMountains(){
-  const ring = [[-70,-95,42,26],[-40,-104,52,30],[-6,-110,60,34],[30,-104,50,30],[64,-92,44,26],
-                [-92,-60,38,22],[86,-56,40,24],[-104,-18,34,20],[100,-10,34,20]];
-  ring.forEach(([x,z,h,r]) => scene.add(makeMountain(x,z,h,r,true)));
-}
-
-function makeTree(kind){
-  const g = new THREE.Group();
-  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.42,2.3,7), new THREE.MeshStandardMaterial({color:0x5c4433, roughness:1}));
-  trunk.position.y = 1.15; g.add(trunk);
-  const green = new THREE.MeshStandardMaterial({color:0x4f8a41, roughness:1, flatShading:true});
-  const pink  = new THREE.MeshStandardMaterial({color:0xe9aec2, roughness:1, flatShading:true});
-  const white = new THREE.MeshStandardMaterial({color:0xeee6da, roughness:1, flatShading:true});
-  if (kind === 'pine'){
-    for (let k=0;k<3;k++){
-      const c = new THREE.Mesh(new THREE.ConeGeometry(2.0-k*0.45, 2.3, 7),
-        new THREE.MeshStandardMaterial({color:0x2f5a34, roughness:1, flatShading:true}));
-      c.position.y = 2.4 + k*1.35; g.add(c);
-    }
-  } else {
-    const mat = kind === 'blossom' ? (Math.random()>0.5?pink:white) : green;
-    for (let k=0;k<3;k++){
-      const s = 1.9 - k*0.32;
-      const puff = new THREE.Mesh(new THREE.IcosahedronGeometry(s, 0), mat);
-      puff.position.set((Math.random()-0.5)*1.1, 3 + k*1.05, (Math.random()-0.5)*1.1);
-      puff.scale.set(1,0.95,1); g.add(puff);
-    }
-  }
-  return g;
-}
-function inLake(x,z){ return Math.hypot(x-LAKE.x, z-LAKE.z) < LAKE.r + 3; }
-function scatterTrees(){
-  const kinds = ['green','green','pine','blossom','blossom'];
-  for (let i=0;i<130;i++){
-    const x = (Math.random()-0.5)*200, z = -70 + Math.random()*95;
-    if (inLake(x,z)) continue;
-    const y = terrainH(x,z); if (y > 8) continue;         // no trees on peaks
-    if (Math.abs(x) < 12 && z > -20 && z < 26) { if (Math.random()>0.25) continue; } // keep garden open
-    const t = makeTree(kinds[(Math.random()*kinds.length)|0]);
-    const s = 0.7 + Math.random()*1.1; t.scale.setScalar(s);
-    t.position.set(x, y-0.2, z); t.rotation.y = Math.random()*Math.PI; scene.add(t);
-  }
-}
-function scatterRocksBushes(){
-  for (let i=0;i<70;i++){
-    const x=(Math.random()-0.5)*180, z=-60+Math.random()*90; if(inLake(x,z)) continue;
-    const y=terrainH(x,z); if(y>9) continue;
-    if (Math.random()>0.5){
-      const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.4+Math.random()*0.9,0), MAT.rock);
-      r.position.set(x,y+0.1,z); r.rotation.set(Math.random(),Math.random(),Math.random()); r.scale.y=0.7; scene.add(r);
-    } else {
-      const b = new THREE.Mesh(new THREE.IcosahedronGeometry(0.6+Math.random()*0.6,0),
-        new THREE.MeshStandardMaterial({color:0x4a7d3c, roughness:1, flatShading:true}));
-      b.position.set(x,y+0.2,z); b.scale.y=0.7; scene.add(b);
-    }
-  }
-  // flower dabs near the path/garden
-  const fcol=[0xff9ec2,0xffe08a,0xffffff,0xc7a6f0,0xff8f6b];
-  for(let i=0;i<120;i++){
-    const t=Math.random(); const p=window._pathCurve.getPoint(t);
-    const x=p.x+(Math.random()-0.5)*10, z=p.z+(Math.random()-0.5)*10; if(inLake(x,z))continue;
-    const f=new THREE.Mesh(new THREE.IcosahedronGeometry(0.12,0),
-      new THREE.MeshStandardMaterial({color:fcol[i%5], roughness:0.7, emissive:fcol[i%5], emissiveIntensity:0.12}));
-    f.position.set(x, terrainH(x,z)+0.16, z); scene.add(f);
-  }
-}
-
-function makeGrave(kind){
-  const g = new THREE.Group();
-  const base = new THREE.Mesh(new THREE.BoxGeometry(2.0,0.4,1.1), MAT.marbleDark); base.position.y=0.2; g.add(base);
-  if (kind==='cross'){
-    const v=new THREE.Mesh(new THREE.BoxGeometry(0.42,2.6,0.42),MAT.marble); v.position.y=1.7; g.add(v);
-    const h=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.42,0.42),MAT.marble); h.position.y=2.15; g.add(h);
-  } else if (kind==='obelisk'){
-    const o=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.62,3.4,4),MAT.marble); o.position.y=2.1; o.rotation.y=Math.PI/4; g.add(o);
-  } else {
-    const sh=new THREE.Shape(); sh.moveTo(-0.85,0); sh.lineTo(-0.85,1.5); sh.absarc(0,1.5,0.85,Math.PI,0,true); sh.lineTo(0.85,0); sh.lineTo(-0.85,0);
-    const geo=new THREE.ExtrudeGeometry(sh,{depth:0.32,bevelEnabled:true,bevelThickness:0.05,bevelSize:0.05,bevelSegments:2});
-    geo.center(); geo.translate(0,1.2,0);
-    g.add(new THREE.Mesh(geo, MAT.marble));
-    const em=new THREE.Mesh(new THREE.TorusGeometry(0.26,0.07,10,24),MAT.gold); em.position.set(0,1.55,0.22); g.add(em);
-  }
-  const glow=new THREE.Mesh(new THREE.SphereGeometry(0.5,14,14),
-    new THREE.MeshBasicMaterial({color:0xffe3ab,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending,depthWrite:false}));
-  glow.position.set(0,0.5,0.7); g.add(glow);
-  const light=new THREE.PointLight(0xffcf8a,0.9,9,2); light.position.set(0,1,0.6); g.add(light);
-  const fcol=[0xff9ec2,0xffe08a,0xffffff,0xc7a6f0];
-  for(let k=0;k<5;k++){ const f=new THREE.Mesh(new THREE.IcosahedronGeometry(0.12,0),new THREE.MeshStandardMaterial({color:fcol[k%4],roughness:0.7,emissive:fcol[k%4],emissiveIntensity:0.15})); f.position.set(-0.7+Math.random()*1.4,0.42,0.5+Math.random()*0.4); g.add(f); }
-  return { g, glow, light };
-}
-function buildGraves(){
-  const kinds=['head','head','cross','head','obelisk','head','cross','head','head','obelisk'];
-  const curve = window._pathCurve;
-  PETS.forEach((pet,i) => {
-    const t = 0.08 + (i/(PETS.length-1))*0.84;
-    const p = curve.getPoint(t), tan = curve.getTangent(t).normalize();
-    const side = new THREE.Vector3(-tan.z,0,tan.x).multiplyScalar((i%2? -1:1) * (3.2 + (i%3)*0.6));
-    const x = p.x + side.x, z = p.z + side.z, y = terrainH(x,z);
-    const { g, glow, light } = makeGrave(kinds[i]);
-    g.position.set(x,y,z);
-    g.lookAt(p.x, y, p.z); // face the path
-    const proxy=new THREE.Mesh(new THREE.BoxGeometry(2.2,3.4,1.8),new THREE.MeshBasicMaterial({visible:false}));
-    proxy.position.y=1.6; proxy.userData.pet=pet; g.add(proxy); clickable.push(proxy);
-    scene.add(g); graves.push({ g, glow, light, phase:Math.random()*6.28 });
-  });
-}
-
-function buildClouds(){
-  const mat=new THREE.MeshStandardMaterial({color:0xeef2f8,roughness:1,emissive:0xdbe6f2,emissiveIntensity:0.04,flatShading:true});
-  for(let i=0;i<11;i++){ const c=new THREE.Group();
-    for(let k=0;k<5;k++){ const p=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6+Math.random()*1.8,0),mat);
-      p.position.set((Math.random()-0.5)*8,(Math.random()-0.5)*1.6,(Math.random()-0.5)*4); p.scale.y=0.55; c.add(p); }
-    c.position.set((Math.random()-0.5)*200,34+Math.random()*24,-100+Math.random()*80); c.userData.sp=0.3+Math.random()*0.5; scene.add(c); }
-  window._clouds = scene.children.filter(o=>o.userData && o.userData.sp);
-}
-function buildBirds(){
-  window._birds=[];
-  const mat=new THREE.MeshBasicMaterial({color:0x2a2f3a});
-  for(let i=0;i<8;i++){ const b=new THREE.Group();
-    const w=new THREE.Mesh(new THREE.CircleGeometry(0.5,3),mat); w.rotation.x=-Math.PI/2; b.add(w);
-    b.position.set((Math.random()-0.5)*80, 24+Math.random()*12, -30+Math.random()*40);
-    b.userData={sp:0.06+Math.random()*0.06, r:20+Math.random()*20, a:Math.random()*6.28}; scene.add(b); window._birds.push(b); }
-}
-function buildPetals(){
-  const n=240,geo=new THREE.BufferGeometry(),a=new Float32Array(n*3);
-  for(let i=0;i<n;i++){ a[i*3]=(Math.random()-0.5)*120; a[i*3+1]=Math.random()*28; a[i*3+2]=-40+Math.random()*70; }
-  geo.setAttribute('position',new THREE.BufferAttribute(a,3));
-  const p=new THREE.Points(geo,new THREE.PointsMaterial({color:0xffc4d6,size:0.26,transparent:true,opacity:0.85,depthWrite:false})); p.userData.base=a.slice(); scene.add(p); window._petals=p;
-}
-function buildMotes(){
-  const n=180,geo=new THREE.BufferGeometry(),a=new Float32Array(n*3);
-  for(let i=0;i<n;i++){ a[i*3]=(Math.random()-0.5)*100; a[i*3+1]=1+Math.random()*13; a[i*3+2]=-40+Math.random()*60; }
-  geo.setAttribute('position',new THREE.BufferAttribute(a,3));
-  const p=new THREE.Points(geo,new THREE.PointsMaterial({color:0xfff0c4,size:0.2,transparent:true,opacity:0.85,blending:THREE.AdditiveBlending,depthWrite:false})); p.userData.base=a.slice(); scene.add(p); window._motes=p;
-}
-function buildStars(){
-  const n=120,geo=new THREE.BufferGeometry(),a=new Float32Array(n*3);
-  for(let i=0;i<n;i++){ const r=260,th=Math.random()*6.28,ph=Math.random()*0.32; a[i*3]=Math.cos(th)*Math.sin(ph)*r; a[i*3+1]=90+Math.cos(ph)*r*0.3; a[i*3+2]=Math.sin(th)*Math.sin(ph)*r; }
-  geo.setAttribute('position',new THREE.BufferAttribute(a,3));
-  scene.add(new THREE.Points(geo,new THREE.PointsMaterial({color:0xffffff,size:0.6,transparent:true,opacity:0.25})));
-}
+// ---- Rainbow: ONE great arch over the whole world --------------------------
 function buildRainbow(){
-  const geo=new THREE.TorusGeometry(64,0.9,8,90,Math.PI),cols=[],rain=[0xc9a7d6,0xa7c4e6,0xa9d6b0,0xe8dca0,0xf0c79a,0xe6a8a2],pos=geo.attributes.position;
-  for(let i=0;i<pos.count;i++){ const ang=Math.atan2(pos.getY(i),pos.getX(i)); const t=THREE.MathUtils.clamp(ang/Math.PI,0,1); const c=new THREE.Color(rain[Math.min(rain.length-1,Math.floor(t*rain.length))]); cols.push(c.r,c.g,c.b); }
-  geo.setAttribute('color',new THREE.Float32BufferAttribute(cols,3));
-  const arc=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:0.26,depthWrite:false})); arc.position.set(-4,-14,-88); scene.add(arc);
+  var bands = [0xf27a97, 0xf6a24e, 0xf4dd5c, 0x8fd89a, 0x7bb6e8, 0xb79be0];
+  var group = new THREE.Group();
+  var baseR = 96, tube = 3.1;
+  for (var i=0;i<bands.length;i++){
+    var r = baseR - i*(tube+0.15);
+    var geo = new THREE.TorusGeometry(r, tube/2, 20, 140, Math.PI); // top half arch
+    var mat = new THREE.MeshBasicMaterial({ color:bands[i], transparent:true, opacity:0.92, fog:false, side:THREE.DoubleSide });
+    group.add(new THREE.Mesh(geo, mat));
+  }
+  // stand it up as a big arch across the sky, tilted back a little
+  group.position.set(0, -2, -18);
+  group.rotation.y = -0.28;
+  scene.add(group);
+  animators.push(function(t){ group.children.forEach(function(m,i){ m.material.opacity = 0.86 + Math.sin(t*0.4 + i*0.5)*0.08; }); });
 }
 
-function onResize(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); if(composer) composer.setSize(innerWidth,innerHeight); }
-function onMove(e){
-  mouse.x=(e.clientX/innerWidth)*2-1; mouse.y=-(e.clientY/innerHeight)*2+1;
-  raycaster.setFromCamera(mouse,camera);
-  const hit=raycaster.intersectObjects(clickable)[0]; const tip=document.getElementById('tip');
-  if(hit){ hovered=hit.object; document.body.style.cursor='pointer'; const p=hovered.userData.pet;
-    tip.innerHTML=p.name+'<small>'+p.yrs+'</small>'; tip.style.left=e.clientX+'px'; tip.style.top=e.clientY+'px'; tip.style.opacity='1';
-  } else { hovered=null; document.body.style.cursor='grab'; tip.style.opacity='0'; }
-}
-function openMemorial(p){
-  document.getElementById('m-pet').textContent=p.pet; document.getElementById('m-name').textContent=p.name;
-  document.getElementById('m-yrs').textContent=p.yrs||''; document.getElementById('m-ep').textContent=p.ep||''; document.getElementById('m-cc').textContent=p.cc;
-  const visit=document.querySelector('.modal .visit'); if(visit) visit.style.display = p.mine ? 'none' : 'block';
-  document.getElementById('modalbg').classList.add('open');
-}
-function onClick(){ if(!hovered) return; openMemorial(hovered.userData.pet); }
-function animate(){
-  requestAnimationFrame(animate); const t=clock.getElapsedTime();
-  graves.forEach(gr=>{ const pulse=0.75+Math.sin(t*1.6+gr.phase)*0.25; gr.light.intensity=0.9*pulse; gr.glow.material.opacity=0.35*pulse+0.2; gr.glow.scale.setScalar(0.9+pulse*0.22); });
-  if(window._clouds) window._clouds.forEach(c=>{ c.position.x+=c.userData.sp*0.02; if(c.position.x>120) c.position.x=-120; });
-  if(window._birds) window._birds.forEach(b=>{ b.userData.a+=b.userData.sp*0.02; b.position.x=Math.cos(b.userData.a)*b.userData.r; b.position.z=-10+Math.sin(b.userData.a)*b.userData.r*0.5; b.rotation.y=-b.userData.a; });
-  if(window._petals){ const p=window._petals,pa=p.geometry.attributes.position,b=p.userData.base; for(let i=0;i<pa.count;i++){ let y=b[i*3+1]-((t*2.2+i)%28); if(y<0)y+=28; pa.setY(i,y); pa.setX(i,b[i*3]+Math.sin(t*0.5+i)*1.2); } pa.needsUpdate=true; }
-  if(window._motes){ const p=window._motes,pa=p.geometry.attributes.position,b=p.userData.base; for(let i=0;i<pa.count;i++){ pa.setY(i,b[i*3+1]+Math.sin(t*0.5+i)*0.6); } pa.needsUpdate=true; }
-  if(window._extraAnim){ for(let i=0;i<window._extraAnim.length;i++) window._extraAnim[i](t); }
-  if(window._fly){ camera.position.lerp(window._fly.p,0.05); controls.target.lerp(window._fly.l,0.07); if(++window._fly.n>70) window._fly=null; }
-  controls.update();
-  if(composer) composer.render(); else renderer.render(scene,camera);
-}
-
-document.getElementById('enter').addEventListener('click', ()=> document.getElementById('veil').classList.add('gone'));
-document.getElementById('mclose').addEventListener('click', ()=> document.getElementById('modalbg').classList.remove('open'));
-document.getElementById('modalbg').addEventListener('click', e=>{ if(e.target.id==='modalbg') e.currentTarget.classList.remove('open'); });
-const mc=document.getElementById('m-candle'), mcc=document.getElementById('m-cc');
-mc.addEventListener('click', ()=>{ mcc.textContent=parseInt(mcc.textContent,10)+1; mc.style.background='#C6A15B'; });
-setTimeout(()=>{ const h=document.getElementById('hint'); if(h) h.style.opacity='0'; }, 8000);
-
-/* ---- Bigger, richer world — extra layers (each isolated) ---- */
-function buildExtras(){
-  [buildDistantRanges, scatterTreesFar, buildGrass, buildReeds, buildLilies,
-   buildBridge, buildLanterns, buildButterflies, buildMoon, buildShrine]
-    .forEach(fn => { try { fn(); } catch(e){ console.warn('extra failed:', fn.name, e); } });
-}
-function addAnim(fns){ window._extraAnim = (window._extraAnim || []).concat(fns); }
-
-function buildDistantRanges(){
-  const layers = [ { z:-188, n:15, c:0x66768f, op:0.85, h:[64,116] },
-                   { z:-248, n:17, c:0x8291a8, op:0.6,  h:[92,150] } ];
-  layers.forEach(L => {
-    for (let i=0;i<L.n;i++){
-      const x = (i/(L.n-1)-0.5)*380 + (Math.random()-0.5)*32;
-      const h = L.h[0] + Math.random()*(L.h[1]-L.h[0]);
-      const r = h*(0.5 + Math.random()*0.18);
-      const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6, 1),
-        new THREE.MeshBasicMaterial({ color:L.c, transparent:true, opacity:L.op }));
-      m.position.set(x, h/2 - 10, L.z + (Math.random()-0.5)*26); m.rotation.y = Math.random(); scene.add(m);
+// ---- Clouds: a few soft drifting puffs -------------------------------------
+function buildClouds(){
+  var mat = new THREE.MeshStandardMaterial({ color:0xffffff, roughness:1, transparent:true, opacity:0.9, fog:false });
+  for (var c=0;c<7;c++){
+    var g = new THREE.Group();
+    var n = 3 + Math.floor(rand(0,3));
+    for (var i=0;i<n;i++){
+      var s = rand(3,6);
+      var puff = new THREE.Mesh(new THREE.SphereGeometry(s, 12, 10), mat);
+      puff.position.set(i*s*0.9 - n*s*0.4, rand(-1,1), rand(-1,1));
+      puff.scale.y = 0.7;
+      g.add(puff);
     }
-  });
-}
-function scatterTreesFar(){
-  const kinds = ['green','green','pine','pine','blossom'];
-  for (let i=0;i<120;i++){
-    const x = (Math.random()-0.5)*280, z = -112 + Math.random()*140;
-    if (inLake(x,z)) continue; const y = terrainH(x,z); if (y>10 || y<-1.5) continue;
-    const t = makeTree(kinds[(Math.random()*kinds.length)|0]);
-    t.scale.setScalar(0.8 + Math.random()*1.5);
-    t.position.set(x, y-0.2, z); t.rotation.y = Math.random()*Math.PI; scene.add(t);
+    g.position.set(rand(-90,90), rand(46,66), rand(-90,40));
+    scene.add(g);
+    (function(grp, sp, base){ animators.push(function(){ grp.position.x += sp; if (grp.position.x>110) grp.position.x=-110; }); })(g, rand(0.01,0.03));
   }
-}
-function buildGrass(){
-  const geo = new THREE.ConeGeometry(0.06, 0.5, 3); geo.translate(0,0.25,0);
-  const mesh = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ color:0x5f9243, roughness:1, flatShading:true }), 2400);
-  const m=new THREE.Matrix4(), pos=new THREE.Vector3(), q=new THREE.Quaternion(), scl=new THREE.Vector3(), eul=new THREE.Euler();
-  let idx=0, guard=0;
-  while (idx<2400 && guard<14000){ guard++;
-    const x=(Math.random()-0.5)*170, z=-70+Math.random()*100;
-    if (inLake(x,z)) continue; const y=terrainH(x,z); if (y>6.5 || y<-1.4) continue;
-    eul.set((Math.random()-0.5)*0.3, Math.random()*6.28, (Math.random()-0.5)*0.3); q.setFromEuler(eul);
-    pos.set(x,y,z); scl.set(1, 0.6+Math.random()*0.9, 1); m.compose(pos,q,scl); mesh.setMatrixAt(idx++, m);
-  }
-  mesh.count = idx; mesh.instanceMatrix.needsUpdate = true; scene.add(mesh);
-}
-function buildReeds(){
-  const geo=new THREE.CylinderGeometry(0.03,0.06,1.5,4); geo.translate(0,0.75,0);
-  const mesh=new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({color:0x77903f, roughness:1}), 140);
-  const m=new THREE.Matrix4(), pos=new THREE.Vector3(), q=new THREE.Quaternion(), scl=new THREE.Vector3(), eul=new THREE.Euler();
-  let idx=0, guard=0;
-  while (idx<140 && guard<1200){ guard++;
-    const a=Math.random()*6.28, r=LAKE.r + (Math.random()*2.4 - 0.6);
-    const x=LAKE.x+Math.cos(a)*r, z=LAKE.z+Math.sin(a)*r, y=terrainH(x,z); if (y>0.6) continue;
-    eul.set((Math.random()-0.5)*0.25, Math.random()*6.28, (Math.random()-0.5)*0.25); q.setFromEuler(eul);
-    pos.set(x,y,z); scl.set(1, 0.7+Math.random()*0.9, 1); m.compose(pos,q,scl); mesh.setMatrixAt(idx++, m);
-  }
-  mesh.count=idx; mesh.instanceMatrix.needsUpdate=true; scene.add(mesh);
-}
-function buildLilies(){
-  const pad=new THREE.MeshStandardMaterial({color:0x3f7a45, roughness:0.85});
-  const petal=new THREE.MeshStandardMaterial({color:0xf3b3cb, roughness:0.7, emissive:0xf3b3cb, emissiveIntensity:0.12});
-  const items=[];
-  for (let i=0;i<16;i++){
-    const a=Math.random()*6.28, r=Math.random()*(LAKE.r-2.5);
-    const x=LAKE.x+Math.cos(a)*r, z=LAKE.z+Math.sin(a)*r;
-    const p=new THREE.Mesh(new THREE.CircleGeometry(0.55+Math.random()*0.5,12), pad); p.rotation.x=-Math.PI/2; p.position.set(x,-0.78,z); scene.add(p); items.push(p);
-    if (Math.random()>0.5){ const f=new THREE.Mesh(new THREE.ConeGeometry(0.2,0.28,6), petal); f.position.set(x,-0.6,z); scene.add(f); }
-  }
-  addAnim([ t => { for (let i=0;i<items.length;i++) items[i].position.y = -0.78 + Math.sin(t*0.8+i)*0.03; } ]);
-}
-function buildBridge(){
-  const wood=new THREE.MeshStandardMaterial({color:0x7a5236, roughness:0.9});
-  const g=new THREE.Group();
-  const deck=new THREE.Mesh(new THREE.BoxGeometry(6,0.24,3), wood); deck.position.y=1.15; g.add(deck);
-  [-1.45,1.45].forEach(zz=>{
-    [-2.6,-1.3,0,1.3,2.6].forEach(xx=>{ const post=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,1.0,6), wood); post.position.set(xx,1.7,zz); g.add(post); });
-    const rail=new THREE.Mesh(new THREE.BoxGeometry(6,0.12,0.12), wood); rail.position.set(0,2.15,zz); g.add(rail);
-  });
-  g.position.set(2, 0.5, -6); g.rotation.y = Math.PI*0.16; scene.add(g);
-}
-function buildLanterns(){
-  const curve=window._pathCurve;
-  const stone=new THREE.MeshStandardMaterial({color:0x8d8577, roughness:0.9});
-  const anim=[];
-  for (let i=0;i<7;i++){
-    const t=0.06+i*0.135; if (t>0.98) break;
-    const p=curve.getPoint(t), tan=curve.getTangent(t).normalize();
-    const side=new THREE.Vector3(-tan.z,0,tan.x).multiplyScalar((i%2?-1:1)*2.7);
-    const x=p.x+side.x, z=p.z+side.z, y=terrainH(x,z);
-    const g=new THREE.Group();
-    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.22,1.7,6), stone); post.position.y=0.85; g.add(post);
-    const boxMat=new THREE.MeshStandardMaterial({color:0xc3b9a6, roughness:0.8, emissive:0xffb457, emissiveIntensity:0.9});
-    const box=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.55,0.55), boxMat); box.position.y=1.7; g.add(box);
-    const cap=new THREE.Mesh(new THREE.ConeGeometry(0.55,0.4,6), stone); cap.position.y=2.15; g.add(cap);
-    const flame=new THREE.Mesh(new THREE.SphereGeometry(0.16,10,10), new THREE.MeshBasicMaterial({color:0xffe0a3})); flame.position.y=1.7; g.add(flame);
-    g.position.set(x,y,z); scene.add(g);
-    anim.push({ box:boxMat, flame:flame, i:i });
-  }
-  addAnim([ t => { anim.forEach(o => { const f=0.85+Math.sin(t*4+o.i)*0.15; o.flame.scale.setScalar(f); o.box.emissiveIntensity=0.7+f*0.4; }); } ]);
-}
-function buildButterflies(){
-  const cols=[0xff9ec2,0xffe08a,0xc7a6f0,0xff8f6b,0xffffff], arr=[];
-  for (let i=0;i<10;i++){
-    const g=new THREE.Group();
-    const mat=new THREE.MeshBasicMaterial({color:cols[i%5], side:THREE.DoubleSide, transparent:true, opacity:0.92});
-    const w1=new THREE.Mesh(new THREE.CircleGeometry(0.22,8), mat); w1.position.x=0.15;
-    const w2=new THREE.Mesh(new THREE.CircleGeometry(0.22,8), mat); w2.position.x=-0.15;
-    g.add(w1); g.add(w2);
-    g.userData={ a:Math.random()*6.28, r:5+Math.random()*11, cx:(Math.random()-0.5)*34, cz:-6+(Math.random()-0.5)*34, h:2+Math.random()*3.5, sp:0.18+Math.random()*0.3, w1, w2 };
-    scene.add(g); arr.push(g);
-  }
-  addAnim([ t => { arr.forEach(g=>{ const u=g.userData; u.a+=u.sp*0.02;
-    g.position.set(u.cx+Math.cos(u.a)*u.r, u.h+Math.sin(t*2+u.r)*0.6, u.cz+Math.sin(u.a)*u.r);
-    g.rotation.y=-u.a; const fl=Math.sin(t*14+u.r)*0.9; u.w1.rotation.y=fl; u.w2.rotation.y=-fl; }); } ]);
-}
-function buildMoon(){
-  const m=new THREE.Mesh(new THREE.SphereGeometry(3.4,20,20), new THREE.MeshBasicMaterial({color:0xf1eddf}));
-  m.position.set(74,52,-30); scene.add(m);
-}
-function buildShrine(){
-  const stone=new THREE.MeshStandardMaterial({color:0x9a9184, roughness:0.9});
-  const g=new THREE.Group();
-  [-2.2,2.2].forEach(xx=>{ const c=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.4,6,8), stone); c.position.set(xx,3,0); g.add(c); });
-  const top=new THREE.Mesh(new THREE.BoxGeometry(6.6,0.5,0.75), stone); top.position.y=6.15; top.rotation.z=0.01; g.add(top);
-  const top2=new THREE.Mesh(new THREE.BoxGeometry(5.4,0.4,0.6), stone); top2.position.y=5.35; g.add(top2);
-  const px=-4, pz=33, y=terrainH(px,pz); g.position.set(px,y,pz); g.lookAt(-9,y,18); scene.add(g);
 }
 
-/* ---- Add your own companion — placement, persistence, camera ---- */
-let userCount = 0;
-function placeUserGrave(pet){
-  const curve = window._pathCurve;
-  const t = 0.12 + ((userCount*0.618034)%1)*0.74;                 // golden-ratio spread along the path
-  const p = curve.getPoint(t), tan = curve.getTangent(t).normalize();
-  const side = new THREE.Vector3(-tan.z,0,tan.x).multiplyScalar((userCount%2? -1:1) * (5.8 + (userCount%3)*0.6)); // outer row, clear of seeded graves
-  const x = p.x + side.x, z = p.z + side.z, y = terrainH(x,z);
-  const { g, glow, light } = makeGrave(['head','cross','obelisk','head'][userCount%4]);
-  g.position.set(x,y,z); g.lookAt(p.x, y, p.z);
-  const proxy = new THREE.Mesh(new THREE.BoxGeometry(2.2,3.4,1.8), new THREE.MeshBasicMaterial({visible:false}));
-  proxy.position.y = 1.6; proxy.userData.pet = pet; g.add(proxy); clickable.push(proxy);
-  scene.add(g); graves.push({ g, glow, light, phase:Math.random()*6.28 });
-  userCount++;
-  return { x, y, z };
-}
-function flyTo(pos, look){
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches){ camera.position.copy(pos); controls.target.copy(look); return; }
-  controls.autoRotate = false; window._fly = { p:pos.clone(), l:look.clone(), n:0 };
-}
-function savedRaw(){ try { return JSON.parse(localStorage.getItem('anivo_pets')||'[]'); } catch(e){ return []; } }
-function loadSaved(){ savedRaw().forEach(p => { p.mine = true; placeUserGrave(p); }); }
-
-const EMOJI = ['🐈','🐕','🐇','🐦','🐢','🐹','🐴','🐠','🐍','🦜','🐖','🐐'];
-let pickEmoji = EMOJI[0];
-(function(){
-  const box = document.getElementById('emoji');
-  EMOJI.forEach((e,i) => {
-    const b = document.createElement('button');
-    b.className = 'emoji-b' + (i===0 ? ' on' : ''); b.type = 'button'; b.textContent = e;
-    b.addEventListener('click', () => { pickEmoji = e; box.querySelectorAll('.emoji-b').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
-    box.appendChild(b);
+// ---- Falling petals for a little life --------------------------------------
+function buildPetals(){
+  var colors = [0xf6a8c8, 0xffe08a, 0xffffff, 0xbfe6c6];
+  var group = new THREE.Group(); scene.add(group);
+  for (var i=0;i<60;i++){
+    var m = new THREE.Mesh(new THREE.CircleGeometry(0.22, 5), new THREE.MeshBasicMaterial({ color:colors[i%colors.length], side:THREE.DoubleSide, transparent:true, opacity:0.9, fog:false }));
+    m.position.set(rand(-90,90), rand(2,40), rand(-90,60));
+    m.userData = { sp:rand(0.02,0.06), sw:rand(0.4,1.2), ph:rand(0,6.28) };
+    group.add(m);
+  }
+  animators.push(function(t){
+    group.children.forEach(function(m){
+      m.position.y -= m.userData.sp;
+      m.position.x += Math.sin(t*m.userData.sw + m.userData.ph)*0.02;
+      m.rotation.z += 0.02; m.rotation.x += 0.01;
+      if (m.position.y < 1) m.position.y = rand(34,42);
+    });
   });
-})();
-document.getElementById('addBtn').addEventListener('click', ()=> document.getElementById('formbg').classList.add('open'));
-document.getElementById('f-cancel').addEventListener('click', ()=> document.getElementById('formbg').classList.remove('open'));
-document.getElementById('formbg').addEventListener('click', e=>{ if(e.target.id==='formbg') e.currentTarget.classList.remove('open'); });
-document.getElementById('f-place').addEventListener('click', ()=>{
-  const name = (document.getElementById('f-name').value.trim() || 'Beloved').slice(0,24);
-  const yrs  = document.getElementById('f-yrs').value.trim().slice(0,20);
-  const epin = document.getElementById('f-ep').value.trim().slice(0,140);
-  const pet = { pet:pickEmoji, name, yrs, ep: epin ? ('“'+epin+'”') : '', cc:0, mine:true };
-  const all = savedRaw(); all.push(pet); try { localStorage.setItem('anivo_pets', JSON.stringify(all)); } catch(e){}
-  const { x, y, z } = placeUserGrave(pet);
-  document.getElementById('f-name').value=''; document.getElementById('f-yrs').value=''; document.getElementById('f-ep').value='';
-  document.getElementById('formbg').classList.remove('open');
+}
+
+// ============================================================================
+// ZONES
+// ============================================================================
+function grassBlade(x,z,color){
+  var m = new THREE.Mesh(new THREE.ConeGeometry(0.14, rand(0.8,1.6), 4), new THREE.MeshStandardMaterial({ color:color||0x7fce88, roughness:1 }));
+  m.position.set(x, 0.6, z); m.rotation.z = rand(-0.2,0.2); return m;
+}
+function tree(x,z,scale){
+  var g = new THREE.Group();
+  var trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5*scale,0.7*scale,3.4*scale,7), new THREE.MeshStandardMaterial({color:0xa9754e,roughness:1}));
+  trunk.position.y = 1.7*scale; trunk.castShadow=true; g.add(trunk);
+  var greens=[0x74c47e,0x88d38f,0x64b673];
+  for (var i=0;i<3;i++){
+    var b=new THREE.Mesh(new THREE.SphereGeometry((2.4-i*0.5)*scale,12,10), new THREE.MeshStandardMaterial({color:greens[i],roughness:1}));
+    b.position.set(rand(-0.5,0.5)*scale,(3.6+i*1.3)*scale,rand(-0.5,0.5)*scale); b.castShadow=true; g.add(b);
+  }
+  g.position.set(x,0,z); return g;
+}
+function waterDisc(x,z,rx,rz,color){
+  var m = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshStandardMaterial({ color:color, roughness:0.25, metalness:0.1, transparent:true, opacity:0.92 }));
+  m.rotation.x=-Math.PI/2; m.position.set(x,0.06,z); m.scale.set(rx,rz,1);
+  animators.push(function(t){ m.position.y = 0.06 + Math.sin(t*1.2)*0.02; });
+  return m;
+}
+function zonePatch(z){
+  var m = new THREE.Mesh(new THREE.CircleGeometry(15, 48), new THREE.MeshStandardMaterial({ color:z.tint, roughness:1, transparent:true, opacity:0.5 }));
+  m.rotation.x=-Math.PI/2; m.position.set(z.cx, 0.04, z.cz); return m;
+}
+
+function buildZones(){
+  // subtle colored patch under every zone
+  Object.keys(ZONES).forEach(function(k){ safe('patch:'+k, function(){ scene.add(zonePatch(ZONES[k])); }); });
+
+  safe('zPark',    zPark);
+  safe('zSea',     zSea);
+  safe('zFlowers', zFlowers);
+  safe('zLake',    zLake);
+  safe('zMeadow',  zMeadow);
+  safe('zCreek',   zCreek);
+  safe('zLabels',  zLabels);
+}
+
+function zPark(){
+  var z = ZONES.park;
+  [[-8,-6,1.1],[7,-9,0.9],[10,6,1.2],[-6,8,1.0],[0,0,1.3],[-12,2,0.85]].forEach(function(p){ scene.add(tree(z.cx+p[0], z.cz+p[1], p[2])); });
+  // a little bench
+  var bench = new THREE.Group();
+  var wood = new THREE.MeshStandardMaterial({color:0xcaa06a,roughness:1});
+  var seat = new THREE.Mesh(new THREE.BoxGeometry(4,0.3,1.3), wood); seat.position.y=1; seat.castShadow=true;
+  var back = new THREE.Mesh(new THREE.BoxGeometry(4,1.1,0.25), wood); back.position.set(0,1.6,-0.5);
+  bench.add(seat,back); bench.position.set(z.cx+4, 0, z.cz+11); scene.add(bench);
+}
+function zSea(){
+  var z = ZONES.sea;
+  // sand shore
+  var sand = new THREE.Mesh(new THREE.CircleGeometry(16,48), new THREE.MeshStandardMaterial({color:0xf3e2b8,roughness:1}));
+  sand.rotation.x=-Math.PI/2; sand.position.set(z.cx,0.03,z.cz); scene.add(sand);
+  // the sea itself, pushed to the outer edge
+  var sea = new THREE.Mesh(new THREE.PlaneGeometry(70,44,1,1), new THREE.MeshStandardMaterial({color:0x5fb6e0,roughness:0.2,metalness:0.15,transparent:true,opacity:0.94}));
+  sea.rotation.x=-Math.PI/2; sea.position.set(z.cx+14,0.05,z.cz-14); scene.add(sea);
+  animators.push(function(t){ sea.position.y = 0.05 + Math.sin(t)*0.03; });
+  // a tiny boat
+  var boat = new THREE.Group();
+  var hull = new THREE.Mesh(new THREE.CylinderGeometry(0.9,0.6,3.4,10,1,false,0,Math.PI), new THREE.MeshStandardMaterial({color:0xe07a5f,roughness:1}));
+  hull.rotation.z=Math.PI/2; hull.rotation.y=Math.PI/2; hull.position.y=0.5;
+  var mast=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,3,6),new THREE.MeshStandardMaterial({color:0x8a6d4a})); mast.position.y=2;
+  var sail=new THREE.Mesh(new THREE.PlaneGeometry(1.6,2),new THREE.MeshStandardMaterial({color:0xffffff,side:THREE.DoubleSide,roughness:1})); sail.position.set(0.5,2,0);
+  boat.add(hull,mast,sail); boat.position.set(z.cx+10,0,z.cz-8);
+  scene.add(boat);
+  animators.push(function(t){ boat.position.y=Math.sin(t*1.4)*0.15; boat.rotation.z=Math.sin(t*1.1)*0.05; });
+}
+function zFlowers(){
+  var z = ZONES.flowers;
+  var colors=[0xf47ea8,0xf6d14e,0xef6f6f,0xb98be0,0xffffff,0xff9d5c];
+  for (var i=0;i<120;i++){
+    var ang=rand(0,6.28), rad=rand(0,14);
+    var x=z.cx+Math.cos(ang)*rad, cz2=z.cz+Math.sin(ang)*rad;
+    var stem=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,rand(0.9,1.6),4),new THREE.MeshStandardMaterial({color:0x6fbf78}));
+    var h=rand(0.9,1.6); stem.position.set(x,h/2,cz2);
+    var head=new THREE.Mesh(new THREE.SphereGeometry(0.28,8,6),new THREE.MeshStandardMaterial({color:colors[i%colors.length],roughness:0.9}));
+    head.position.set(x,h+0.1,cz2);
+    scene.add(stem); scene.add(head);
+  }
+}
+function zLake(){
+  var z = ZONES.lake;
+  scene.add(waterDisc(z.cx, z.cz, 13, 10, 0x67bcd4));
+  // lily pads
+  for (var i=0;i<7;i++){
+    var pad=new THREE.Mesh(new THREE.CircleGeometry(rand(0.7,1.3),12),new THREE.MeshStandardMaterial({color:0x66b877,roughness:1,side:THREE.DoubleSide}));
+    pad.rotation.x=-Math.PI/2; pad.position.set(z.cx+rand(-9,9),0.12,z.cz+rand(-6,6)); scene.add(pad);
+  }
+  // reeds around edge
+  for (var r=0;r<40;r++){
+    var ang=rand(0,6.28); var x=z.cx+Math.cos(ang)*rand(11,15), cz2=z.cz+Math.sin(ang)*rand(8,11);
+    scene.add(grassBlade(x,cz2,0x8fbf6a));
+  }
+}
+function zMeadow(){
+  var z = ZONES.meadow;
+  for (var i=0;i<200;i++){
+    var x=z.cx+rand(-14,14), cz2=z.cz+rand(-14,14);
+    scene.add(grassBlade(x,cz2, Math.random()<0.5?0xe6c766:0xd8b95a));
+  }
+  // a couple of round hay bales
+  for (var b=0;b<3;b++){
+    var bale=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,2.4,16),new THREE.MeshStandardMaterial({color:0xe3c06a,roughness:1}));
+    bale.rotation.z=Math.PI/2; bale.position.set(z.cx+rand(-8,8),1.4,z.cz+rand(-8,8)); bale.castShadow=true; scene.add(bale);
+  }
+}
+function zCreek(){
+  var z = ZONES.creek;
+  var pts=[];
+  for (var i=0;i<=10;i++){ pts.push(new THREE.Vector3(z.cx-16+i*3.4, 0.08, z.cz + Math.sin(i*0.7)*4)); }
+  var curve=new THREE.CatmullRomCurve3(pts);
+  var geo=new THREE.TubeGeometry(curve, 60, 1.4, 8, false);
+  var creek=new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:0x74c6d8,roughness:0.25,metalness:0.1,transparent:true,opacity:0.92}));
+  creek.position.y=0.05; scene.add(creek);
+  // stepping stones
+  for (var s=0;s<6;s++){
+    var t=s/6; var p=curve.getPoint(t);
+    var stone=new THREE.Mesh(new THREE.SphereGeometry(rand(0.5,0.9),8,6),new THREE.MeshStandardMaterial({color:0xb8b2a6,roughness:1}));
+    stone.position.set(p.x, 0.25, p.z+rand(-1.6,1.6)); stone.scale.y=0.5; scene.add(stone);
+  }
+  // a couple of trees by the water
+  scene.add(tree(z.cx-14, z.cz-6, 1.0)); scene.add(tree(z.cx+12, z.cz+5, 0.9));
+}
+
+// floating zone name labels (sprites)
+function zLabels(){
+  Object.keys(ZONES).forEach(function(k){
+    var z = ZONES[k];
+    var cv=document.createElement('canvas'); cv.width=256; cv.height=80; var x=cv.getContext('2d');
+    x.font='600 34px Fraunces, Georgia, serif'; x.textAlign='center'; x.textBaseline='middle';
+    x.fillStyle='rgba(43,54,72,0.9)'; x.fillText(z.emoji+' '+z.label, 128, 42);
+    var tex=new THREE.CanvasTexture(cv); tex.anisotropy=4;
+    var spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,fog:false}));
+    spr.scale.set(11,3.4,1); spr.position.set(z.cx, 9, z.cz); spr.renderOrder=5;
+    scene.add(spr);
+  });
+}
+
+// ============================================================================
+// GRAVES
+// ============================================================================
+// rounded-top headstone silhouette
+function headstoneShape(w,h,r){
+  var s=new THREE.Shape(), hw=w/2;
+  s.moveTo(-hw, 0);
+  s.lineTo(-hw, h-r);
+  s.quadraticCurveTo(-hw, h, -hw+r, h);
+  s.lineTo(hw-r, h);
+  s.quadraticCurveTo(hw, h, hw, h-r);
+  s.lineTo(hw, 0);
+  s.lineTo(-hw, 0);
+  return s;
+}
+
+// canvas face: round photo + name + years (drawn on transparent bg → stone shows through)
+function graveFace(data){
+  var W=340, H=440, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  var x=cv.getContext('2d');
+
+  function draw(){
+    x.clearRect(0,0,W,H);
+    // photo ring
+    var cx=W/2, cy=150, r=92;
+    x.save();
+    x.beginPath(); x.arc(cx,cy,r+9,0,Math.PI*2); x.fillStyle='#ffffff'; x.fill();
+    x.beginPath(); x.arc(cx,cy,r+9,0,Math.PI*2); x.lineWidth=4; x.strokeStyle='#e4a93c'; x.stroke();
+    x.restore();
+    // name
+    x.fillStyle='#2b2620'; x.textAlign='center'; x.textBaseline='middle';
+    x.font='600 46px Fraunces, Georgia, serif';
+    x.fillText(data.name || '—', cx, 300);
+    // years
+    var yr = [data.born||'', data.passed||''].filter(Boolean).join('  –  ');
+    if (yr){ x.font='italic 30px Fraunces, Georgia, serif'; x.fillStyle='#7a6a4a'; x.fillText(yr, cx, 350); }
+    // little heart + paw
+    x.font='30px serif'; x.fillStyle='#c76d97'; x.fillText('\u{1F43E}', cx, 398);
+  }
+
+  draw();
+  var tex=new THREE.CanvasTexture(cv); tex.anisotropy=4; tex.needsUpdate=true;
+
+  if (data.photo){
+    var img=new Image();
+    img.onload=function(){
+      var cx=W/2, cy=150, r=92;
+      x.save();
+      x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.clip();
+      // cover-fit
+      var s=Math.max((r*2)/img.width,(r*2)/img.height);
+      var dw=img.width*s, dh=img.height*s;
+      x.drawImage(img, cx-dw/2, cy-dh/2, dw, dh);
+      x.restore();
+      tex.needsUpdate=true;
+    };
+    img.src=data.photo;
+  } else {
+    // emoji fallback in the circle
+    var cx=W/2, cy=150;
+    x.font='96px serif'; x.textAlign='center'; x.textBaseline='middle';
+    x.fillStyle='#f0e6d6';
+    x.beginPath(); x.arc(cx,cy,92,0,Math.PI*2); x.fill();
+    x.fillStyle='#000'; x.fillText('\u{1F43E}', cx, cy+4);
+    tex.needsUpdate=true;
+  }
+  return tex;
+}
+
+function placeGrave(data){
+  var g = new THREE.Group();
+  g.position.set(data.x, 0, data.z);
+
+  // plot mound
+  var plot = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 3.0, 0.5, 24), new THREE.MeshStandardMaterial({color:0x89ce8f, roughness:1}));
+  plot.position.y=0.25; plot.receiveShadow=true; g.add(plot);
+  // soil ring
+  var soil = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.35, 8, 24), new THREE.MeshStandardMaterial({color:0x8a6a4a, roughness:1}));
+  soil.rotation.x=Math.PI/2; soil.position.y=0.5; g.add(soil);
+
+  // headstone (extruded rounded slab)
+  var W=4.4, H=6.2;
+  var shape = headstoneShape(W, H, 1.9);
+  var geo = new THREE.ExtrudeGeometry(shape, { depth:0.7, bevelEnabled:true, bevelThickness:0.12, bevelSize:0.12, bevelSegments:2 });
+  var stone = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:0xf2ede3, roughness:0.85}));
+  stone.position.set(0, 0.5, -0.35); stone.castShadow=true; g.add(stone);
+
+  // face plate with photo + name + years
+  var faceTex = graveFace(data);
+  var plate = new THREE.Mesh(new THREE.PlaneGeometry(W*0.92, H*0.92), new THREE.MeshBasicMaterial({map:faceTex, transparent:true}));
+  plate.position.set(0, 0.5 + H*0.46, 0.42); g.add(plate);
+
+  // a couple of flowers at the base
+  [[-1.8,1.4,0xf47ea8],[1.9,1.2,0xf6d14e],[0.2,2.2,0xb98be0]].forEach(function(f){
+    var st=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.9,4),new THREE.MeshStandardMaterial({color:0x6fbf78}));
+    st.position.set(f[0],0.75,f[1]); g.add(st);
+    var hd=new THREE.Mesh(new THREE.SphereGeometry(0.24,8,6),new THREE.MeshStandardMaterial({color:f[2]}));
+    hd.position.set(f[0],1.2,f[1]); g.add(hd);
+  });
+
+  // face toward world center so fronts are visible as you orbit
+  g.lookAt(0, 0.5, 0);
+
+  g.userData.pet = data;
+  scene.add(g);
+  graveGroups.push(g);
+  return g;
+}
+
+// ============================================================================
+// INTERACTION
+// ============================================================================
+function pickGrave(ev){
+  var rect=renderer.domElement.getBoundingClientRect();
+  mouse.x=((ev.clientX-rect.left)/rect.width)*2-1;
+  mouse.y=-((ev.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouse, camera);
+  var hits=raycaster.intersectObjects(graveGroups, true);
+  if (!hits.length) return null;
+  var o=hits[0].object;
+  while (o && !o.userData.pet) o=o.parent;
+  return o;
+}
+function onMove(ev){
+  var g=pickGrave(ev);
+  if (g){
+    hoverPet=g.userData.pet;
+    renderer.domElement.style.cursor='pointer';
+    tipEl.innerHTML=(hoverPet.name||'')+'<small>click to visit</small>';
+    tipEl.style.left=ev.clientX+'px'; tipEl.style.top=ev.clientY+'px'; tipEl.style.opacity='1';
+  } else {
+    hoverPet=null; renderer.domElement.style.cursor='grab'; tipEl.style.opacity='0';
+  }
+}
+function onClick(ev){
+  var g=pickGrave(ev);
+  if (g){ openCard(g.userData.pet); flyTo(g.position); }
+}
+
+// ---- camera flight ----
+function flyTo(target){
+  var from=camera.position.clone(), fromT=controls.target.clone();
+  var dir=new THREE.Vector3(0,0,1).applyQuaternion(camera.quaternion).setY(0).normalize();
+  var to=new THREE.Vector3(target.x, 8, target.z).add(dir.multiplyScalar(18));
+  var toT=new THREE.Vector3(target.x, 4, target.z);
+  var t0=performance.now(), dur=1100;
+  (function step(){
+    var k=Math.min(1,(performance.now()-t0)/dur), e=k<0.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    camera.position.lerpVectors(from,to,e);
+    controls.target.lerpVectors(fromT,toT,e);
+    controls.update();
+    if (k<1) requestAnimationFrame(step);
+  })();
+}
+
+// ============================================================================
+// UI
+// ============================================================================
+var modalBg=document.getElementById('modalBg');
+function openCard(p){
+  document.getElementById('mName').textContent=p.name||'—';
+  var yr=[p.born,p.passed].filter(Boolean).join('  –  ');
+  document.getElementById('mYrs').textContent=yr;
+  var z=ZONES[p.zone];
+  document.getElementById('mPlace').textContent=z?(z.emoji+' '+z.label):'';
+  var ph=document.getElementById('mPhoto');
+  if (p.photo){ ph.style.backgroundImage='url('+p.photo+')'; ph.textContent=''; }
+  else { ph.style.backgroundImage='none'; ph.textContent='\u{1F43E}'; }
+  var msg=document.getElementById('mMsg');
+  if (p.msg){ msg.textContent=p.msg; msg.className=''; }
+  else { msg.textContent='Resting gently in the light.'; msg.className='empty'; }
+  modalBg.classList.add('open');
+}
+document.getElementById('modalClose').onclick=function(){ modalBg.classList.remove('open'); };
+modalBg.onclick=function(e){ if(e.target===modalBg) modalBg.classList.remove('open'); };
+
+// ---- add form ----
+var formBg=document.getElementById('formBg');
+var pickedZone=null, pickedPhoto='';
+function buildZonePicker(){
+  var host=document.getElementById('fZones'); host.innerHTML='';
+  Object.keys(ZONES).forEach(function(k){
+    var z=ZONES[k];
+    var el=document.createElement('div'); el.className='zone'; el.dataset.k=k;
+    el.innerHTML='<span class="z-e">'+z.emoji+'</span><span class="z-l">'+z.label+'</span><span class="z-h">'+z.hint+'</span>';
+    el.onclick=function(){
+      pickedZone=k;
+      [].forEach.call(host.children,function(c){ c.classList.remove('sel'); });
+      el.classList.add('sel'); validate();
+    };
+    host.appendChild(el);
+  });
+}
+function validate(){
+  var ok=document.getElementById('fName').value.trim() && pickedZone;
+  document.getElementById('fSave').disabled=!ok;
+}
+document.getElementById('addBtn').onclick=function(){ formBg.classList.add('open'); };
+document.getElementById('formClose').onclick=function(){ formBg.classList.remove('open'); };
+formBg.onclick=function(e){ if(e.target===formBg) formBg.classList.remove('open'); };
+document.getElementById('fName').oninput=validate;
+document.getElementById('fMsg').oninput=function(){ document.getElementById('fCount').textContent=this.value.length; };
+document.getElementById('fPhotoBtn').onclick=function(){ document.getElementById('fPhoto').click(); };
+document.getElementById('fPhoto').onchange=function(e){
+  var file=e.target.files[0]; if(!file) return;
+  compressPhoto(file, function(dataUrl){
+    pickedPhoto=dataUrl;
+    document.getElementById('fPrev').style.backgroundImage='url('+dataUrl+')';
+    document.getElementById('fPrev').textContent='';
+  });
+};
+function compressPhoto(file, cb){
+  var rd=new FileReader();
+  rd.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      var S=280, cv=document.createElement('canvas'); cv.width=S; cv.height=S; var x=cv.getContext('2d');
+      var s=Math.max(S/img.width,S/img.height), dw=img.width*s, dh=img.height*s;
+      x.drawImage(img,(S-dw)/2,(S-dh)/2,dw,dh);
+      cb(cv.toDataURL('image/jpeg',0.82));
+    };
+    img.src=rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+document.getElementById('fSave').onclick=function(){
+  var pet={
+    id:'p'+Date.now()+Math.floor(Math.random()*1000),
+    name:document.getElementById('fName').value.trim().slice(0,24),
+    born:document.getElementById('fBorn').value.trim().slice(0,12),
+    passed:document.getElementById('fPassed').value.trim().slice(0,12),
+    msg:document.getElementById('fMsg').value.trim().slice(0,200),
+    zone:pickedZone, photo:pickedPhoto
+  };
+  var s=spotInZone(pet.zone, pet.id); pet.x=s.x; pet.z=s.z;
+  var all=loadPets(); all.push(pet); savePets(all);
+  safe('grave:new', function(){ placeGrave(pet); });
+  formBg.classList.remove('open');
+  // reset
+  document.getElementById('fName').value=''; document.getElementById('fBorn').value='';
+  document.getElementById('fPassed').value=''; document.getElementById('fMsg').value='';
+  document.getElementById('fCount').textContent='0';
+  document.getElementById('fPrev').style.backgroundImage='none'; document.getElementById('fPrev').textContent='\u{1F43E}';
+  pickedPhoto=''; pickedZone=null; buildZonePicker(); validate();
+  flyTo(new THREE.Vector3(pet.x,0,pet.z));
+  setTimeout(function(){ openCard(pet); }, 1150);
+};
+
+// ---- veil / enter ----
+document.getElementById('enterBtn').onclick=function(){
   document.getElementById('veil').classList.add('gone');
-  flyTo(new THREE.Vector3(x + (x>=0?-9:9), y+7, z+13), new THREE.Vector3(x, y+1.3, z));
-  setTimeout(()=> openMemorial(pet), 1600);
-});
+  setTimeout(function(){ var h=document.getElementById('hint'); if(h){ h.style.opacity='0'; } }, 6000);
+};
 
-if (window.THREE && THREE.OrbitControls) init();
-else document.getElementById('loading').textContent = '3D failed to load — open over http (Vercel preview), not file://';
+// ============================================================================
+function onResize(){
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+var clock;
+function animate(){
+  requestAnimationFrame(animate);
+  if (!clock) clock=new THREE.Clock();
+  var t=clock.getElapsedTime();
+  for (var i=0;i<animators.length;i++){ try { animators[i](t); } catch(e){} }
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// boot
+buildZonePicker();
+function boot(){
+  if (window.THREE && THREE.OrbitControls){ init(); }
+  else {
+    var l=document.getElementById('loading');
+    if (l) l.textContent='Could not reach the world library. Please refresh.';
+  }
+}
+if (document.readyState==='complete') boot();
+else addEventListener('load', boot);
 </script>
 </body>
 </html>
