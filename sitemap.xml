@@ -21,6 +21,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://anivo.app/blog-how-long-does-pet-grief-last</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://anivo.app/blog-guilt-after-putting-pet-to-sleep</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://anivo.app/blog-helping-child-with-pet-loss</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://anivo.app/blog-what-to-do-when-your-pet-dies</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://anivo.app/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
