@@ -22,7 +22,7 @@ class CorrelationEngine:
     def update(self, symbol: str, candles: list[Candle]) -> None:
         closes = [(int(c.open_time.timestamp()), c.close) for c in candles[-(self.window + 1):]]
         rets: dict[int, float] = {}
-        for (t0, p0), (t1, p1) in zip(closes, closes[1:], strict=False):
+        for (_t0, p0), (t1, p1) in zip(closes, closes[1:], strict=False):
             if p0 > 0 and p1 > 0:
                 rets[t1] = float(np.log(p1 / p0))
         self._returns[symbol] = rets
