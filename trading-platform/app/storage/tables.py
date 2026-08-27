@@ -20,11 +20,38 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    TypeDecorator,
     UniqueConstraint,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-MONEY = Numeric(38, 18)
+
+class MoneyType(TypeDecorator):
+    """Exact decimal storage: NUMERIC on PostgreSQL, TEXT on SQLite (which would
+    otherwise coerce NUMERIC to float and silently lose precision)."""
+
+    impl = Numeric(38, 18)
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "sqlite":
+            return dialect.type_descriptor(String(64))
+        return dialect.type_descriptor(Numeric(38, 18))
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        if dialect.name == "sqlite":
+            return str(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        return Decimal(str(value))
+
+
+MONEY = MoneyType()
 
 
 class Base(DeclarativeBase):
