@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuantLab</title>
+<style>
+:root { --bg:#0d1117; --panel:#161b22; --border:#30363d; --text:#e6edf3; --dim:#8b949e;
+        --green:#3fb950; --red:#f85149; --amber:#d29922; --blue:#58a6ff; }
+* { box-sizing:border-box; margin:0; }
+body { background:var(--bg); color:var(--text); font:14px/1.5 ui-monospace,Menlo,Consolas,monospace; }
+header { display:flex; align-items:center; gap:16px; padding:10px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg); z-index:2; flex-wrap:wrap;}
+header h1 { font-size:16px; color:var(--blue); }
+#state-badge { padding:2px 10px; border-radius:12px; font-weight:bold; }
+nav button { background:none; border:none; color:var(--dim); font:inherit; padding:6px 10px; cursor:pointer; border-bottom:2px solid transparent; }
+nav button.active { color:var(--text); border-bottom-color:var(--blue); }
+main { padding:16px 20px; max-width:1400px; margin:0 auto; }
+.grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+.card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:12px 14px; }
+.card h3 { font-size:12px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; }
+.big { font-size:22px; font-weight:bold; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th { text-align:left; color:var(--dim); font-weight:normal; border-bottom:1px solid var(--border); padding:4px 6px;}
+td { padding:4px 6px; border-bottom:1px solid #21262d; vertical-align:top;}
+.pos { color:var(--green);} .neg { color:var(--red);} .warn { color:var(--amber);}
+.pill { display:inline-block; padding:0 8px; border-radius:10px; font-size:11px; border:1px solid var(--border); }
+canvas { width:100%; height:120px; }
+pre { white-space:pre-wrap; font-size:12px; color:var(--dim); }
+.section { display:none; } .section.active { display:block; }
+.controls button { background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:4px 12px; cursor:pointer; font:inherit;}
+.controls button:hover { border-color:var(--blue); }
+footer { color:var(--dim); font-size:11px; padding:20px; text-align:center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>QuantLab</h1>
+  <span id="state-badge">…</span>
+  <nav id="nav"></nav>
+  <span class="controls" style="margin-left:auto">
+    <button onclick="post('/api/v1/system/pause')">pause</button>
+    <button onclick="post('/api/v1/system/resume')">resume</button>
+  </span>
+</header>
+<main id="main"></main>
+<footer>local dashboard · production execution is hard-disabled · refreshes every 5s</footer>
+<script>
+const SECTIONS = ["Overview","Market","Signals","Strategies","Paper","Testnet","Performance","Risk","Events","Sources","Health"];
+const nav = document.getElementById("nav"), main = document.getElementById("main");
+let active = location.hash.slice(1) || "Overview";
+SECTIONS.forEach(s => {
+  const b = document.createElement("button"); b.textContent = s;
+  b.onclick = () => { active = s; location.hash = s; render(); refresh(); };
+  nav.appendChild(b);
+  const d = document.createElement("div"); d.className = "section"; d.id = "sec-" + s;
+  main.appendChild(d);
+});
+function render() {
+  [...nav.children].forEach(b => b.classList.toggle("active", b.textContent === active));
+  [...main.children].forEach(d => d.classList.toggle("active", d.id === "sec-" + active));
+}
+const get = async (u) => { try { const r = await fetch(u); return await r.json(); } catch { return null; } };
+const post = async (u) => { await fetch(u, {method:"POST"}); refresh(); };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num = (v, d=2) => v == null ? "—" : Number(v).toFixed(d);
+const cls = (v) => v > 0 ? "pos" : v < 0 ? "neg" : "";
+const table = (heads, rows) => `<table><tr>${heads.map(h=>`<th>${h}</th>`).join("")}</tr>` +
+  rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("") + "</table>";
+
+function sparkline(id, points) {
+  const c = document.getElementById(id); if (!c || !points?.length) return;
+  const ctx = c.getContext("2d"), W = c.width = c.offsetWidth, H = c.height = 120;
+  const vals = points.map(p => p.equity);
+  const min = Math.min(...vals), max = Math.max(...vals), span = (max - min) || 1;
+  ctx.clearRect(0,0,W,H); ctx.beginPath();
+  vals.forEach((v,i) => { const x = i/(vals.length-1||1)*W, y = H-8-(v-min)/span*(H-16);
+    i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); });
+  ctx.strokeStyle = vals.at(-1) >= vals[0] ? "#3fb950" : "#f85149"; ctx.lineWidth = 1.5; ctx.stroke();
+}
+
+async function refresh() {
+  const status = await get("/api/v1/system/status");
+  if (status) {
+    const badge = document.getElementById("state-badge");
+    badge.textContent = status.state + " · " + status.execution_mode;
+    badge.style.background = status.state === "HEALTHY" ? "#1a7f37" :
+      status.state === "RISK_LOCK" || status.state === "DATA_STALE" ? "#8b2423" : "#7d5a00";
+  }
+  const fn = { Overview: rOverview, Market: rMarket, Signals: rSignals, Strategies: rStrategies,
+    Paper: () => rVenue("Paper"), Testnet: () => rVenue("Testnet"), Performance: rPerf,
+    Risk: rRisk, Events: rEvents, Sources: rSources, Health: rHealth }[active];
+  if (fn) await fn();
+}
+
+async function rOverview() {
+  const [perf, pos, status, regimes, decisions] = await Promise.all([
+    get("/api/v1/performance?days=30"), get("/api/v1/positions"),
+    get("/api/v1/system/status"), get("/api/v1/regimes"), get("/api/v1/decisions?limit=8")]);
+  const openRows = (pos?.open ?? []).map(p =>
+    [p.venue, p.symbol, num(p.qty,6), num(p.avg_entry_price), `<span class="${cls(p.unrealized_pnl)}">${num(p.unrealized_pnl)}</span>`, esc(p.strategy)]);
+  document.getElementById("sec-Overview").innerHTML = `
+    <div class="grid">
+      <div class="card"><h3>Equity (paper)</h3><div class="big">${num(perf?.equity)}</div>
+        <canvas id="ov-eq"></canvas></div>
+      <div class="card"><h3>Unrealized / Drawdown</h3>
+        <div class="big ${cls(perf?.unrealized_pnl)}">${num(perf?.unrealized_pnl)}</div>
+        <div>drawdown ${num(perf?.drawdown_pct)}%</div></div>
+      <div class="card"><h3>Regimes</h3>${Object.entries(regimes?.regimes ?? {}).map(([s,r]) =>
+        `<div>${s}: <span class="pill">${esc(r.regime)}</span> vol ${esc(r.volatility||"?")}</div>`).join("") || "—"}</div>
+      <div class="card"><h3>System</h3><pre>${esc(JSON.stringify(status, null, 1))}</pre></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h3>Open positions</h3>
+      ${openRows.length ? table(["venue","symbol","qty","entry","uPnL","strategy"], openRows) : "none"}</div>
+    <div class="card" style="margin-top:12px"><h3>Recent decisions</h3>
+      ${table(["time","symbol","strategy","decision","failed stage"], (decisions??[]).map(d =>
+        [esc(d.timestamp?.slice(5,16)), esc(d.symbol), esc(d.strategy),
+         `<span class="${d.decision==="APPROVED"?"pos":"warn"}">${esc(d.decision)}</span>`, esc(d.failed_stage ?? "")]))}</div>`;
+  sparkline("ov-eq", perf?.equity_curve);
+}
+
+async function rMarket() {
+  const m = await get("/api/v1/market");
+  document.getElementById("sec-Market").innerHTML = `<div class="card"><h3>Market</h3>
+    ${table(["symbol","last","spread %","24h quote vol","quality","age s"],
+      Object.entries(m?.symbols ?? {}).map(([s,v]) =>
+        [s, num(v.last_price, 4), num(v.spread_pct, 4), v.quote_volume_24h ? Number(v.quote_volume_24h).toExponential(2) : "—",
+         num(v.quality,2), num(v.age_s,0)]))}</div>`;
+}
+
+async function rSignals() {
+  const [signals, decisions] = await Promise.all([
+    get("/api/v1/signals?limit=30"), get("/api/v1/decisions?limit=30")]);
+  document.getElementById("sec-Signals").innerHTML = `
+    <div class="card"><h3>Signals</h3>${table(
+      ["time","symbol","dir","strategy","conf","regime","stop","target"],
+      (signals??[]).map(s => [esc(s.timestamp?.slice(5,16)), esc(s.symbol), esc(s.direction),
+        esc(s.strategy), num(s.confidence,0), esc(s.market_regime),
+        num(s.hypothetical_stop,2), num(s.hypothetical_target,2)]))}</div>
+    <div class="card" style="margin-top:12px"><h3>Decisions (incl. rejected)</h3>
+      ${(decisions??[]).map(d => `<details><summary>${esc(d.timestamp?.slice(5,16))} ${esc(d.symbol)} ${esc(d.strategy)}
+        <span class="${d.decision==="APPROVED"?"pos":"warn"}">${esc(d.decision)}</span></summary>
+        <pre>${esc(d.explanation)}</pre></details>`).join("")}</div>`;
+}
+
+async function rStrategies() {
+  const s = await get("/api/v1/strategies");
+  document.getElementById("sec-Strategies").innerHTML = `<div class="card"><h3>Strategies</h3>
+    ${table(["name","version","stage","enabled","scorecard","live stats"], (s??[]).map(r =>
+      [esc(r.name), esc(r.version), `<span class="pill">${esc(r.stage)}</span>`, r.enabled,
+       num(r.scorecard,0), `<pre>${esc(JSON.stringify(r.live ?? {}, null, 0))}</pre>`]))}</div>`;
+}
+
+async function rVenue(which) {
+  const pos = await get("/api/v1/positions");
+  const venue = which.toUpperCase() === "PAPER" ? "PAPER" : "TESTNET";
+  const open = (pos?.open ?? []).filter(p => p.venue === venue);
+  const closed = (pos?.recently_closed ?? []).filter(p => p.venue === venue);
+  document.getElementById("sec-" + which).innerHTML = `
+    <div class="card"><h3>${which} open positions</h3>${open.length ? table(
+      ["symbol","qty","entry","stop","target","uPnL","strategy"], open.map(p =>
+      [p.symbol, num(p.qty,6), num(p.avg_entry_price), num(p.stop_price), num(p.target_price),
+       `<span class="${cls(p.unrealized_pnl)}">${num(p.unrealized_pnl)}</span>`, esc(p.strategy)])) : "none"}</div>
+    <div class="card" style="margin-top:12px"><h3>Recently closed</h3>${closed.length ? table(
+      ["symbol","qty","entry","PnL","fees","reason","strategy"], closed.map(p =>
+      [p.symbol, num(p.qty,6), num(p.avg_entry_price),
+       `<span class="${cls(p.realized_pnl)}">${num(p.realized_pnl)}</span>`,
+       num(p.fees_paid), esc(p.close_reason), esc(p.strategy)])) : "none"}</div>`;
+}
+
+async function rPerf() {
+  const perf = await get("/api/v1/performance?days=90");
+  document.getElementById("sec-Performance").innerHTML = `
+    <div class="grid">
+      <div class="card"><h3>Equity curve (90d)</h3><canvas id="pf-eq"></canvas></div>
+      <div class="card"><h3>Summary</h3><pre>${esc(JSON.stringify(perf ?? {}, (k,v)=>k==="equity_curve"?undefined:v, 1))}</pre></div>
+    </div>`;
+  sparkline("pf-eq", perf?.equity_curve);
+}
+
+async function rRisk() {
+  const r = await get("/api/v1/risk");
+  document.getElementById("sec-Risk").innerHTML = `
+    <div class="grid">
+      <div class="card"><h3>Risk snapshot</h3><pre>${esc(JSON.stringify(r?.snapshot ?? {}, null, 1))}</pre>
+        <div class="controls" style="margin-top:8px"><button onclick="post('/api/v1/system/risk-unlock')">operator unlock</button></div></div>
+      <div class="card"><h3>Recent risk events</h3>${table(["time","kind","symbol","detail"],
+        (r?.recent_events ?? []).map(e => [esc(e.timestamp?.slice(5,16)), esc(e.kind), esc(e.symbol ?? ""), esc(e.detail)]))}</div>
+    </div>`;
+}
+
+async function rEvents() {
+  const events = await get("/api/v1/events?limit=100");
+  document.getElementById("sec-Events").innerHTML = `<div class="card"><h3>External events (7d)</h3>
+    ${table(["time","cat","assets","conf","sent","source","headline"], (events??[]).map(e =>
+      [esc(e.timestamp?.slice(5,16)), esc(e.category), esc((e.assets??[]).join(",")),
+       num(e.confidence,2), `<span class="${cls(e.sentiment)}">${num(e.sentiment,1)}</span>`,
+       esc(e.source), esc(e.headline?.slice(0,90))]))}</div>`;
+}
+
+async function rSources() {
+  const s = await get("/api/v1/sources");
+  document.getElementById("sec-Sources").innerHTML = `
+    <div class="card"><h3>Collectors</h3>${table(["name","healthy","detail","events","dupes dropped","lag s"],
+      Object.values(s?.collectors ?? {}).map(c => [esc(c.name),
+        `<span class="${c.healthy?"pos":"neg"}">${c.healthy}</span>`, esc(c.detail),
+        c.events_seen, c.duplicates_dropped, num(c.lag_seconds,0)]))}</div>
+    <div class="card" style="margin-top:12px"><h3>Data quality</h3>
+      <pre>${esc(JSON.stringify(s?.data_quality ?? {}, null, 1))}</pre></div>`;
+}
+
+async function rHealth() {
+  const h = await get("/health");
+  document.getElementById("sec-Health").innerHTML =
+    `<div class="card"><h3>Full health snapshot</h3><pre>${esc(JSON.stringify(h ?? {}, null, 1))}</pre></div>`;
+}
+
+render(); refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>

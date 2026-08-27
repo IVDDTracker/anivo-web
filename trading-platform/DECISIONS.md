@@ -213,8 +213,11 @@ suite runs in CI with no network. Chaos tests simulate disconnects, duplicate/ou
 messages, price anomalies, and submit-timeouts. Anything touching real Binance testnet is behind
 `scripts/` and requires explicit credentials.
 
-## D-021: Environment constraint noted during development
+## D-021: Environment constraints noted during development
 
 The build sandbox's egress proxy blocks `api.binance.com`/`testnet.binance.vision`, so live
 connectivity was not exercised here; correctness is covered by contract tests written against the
-official documented payloads (fixtures in `tests/fixtures/`).
+official documented payload shapes (embedded in `tests/`). The sandbox also has no Docker daemon,
+so `docker build`/`compose up` were not executed here: `docker compose config` is validated, the
+Dockerfile installs exactly the dependency set exercised by the test suite, and full wiring is
+integration-tested in-process (`tests/test_api_wiring.py` instantiates the real Platform).

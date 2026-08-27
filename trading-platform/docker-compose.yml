@@ -29,7 +29,8 @@ services:
   app:
     build: .
     env_file:
-      - .env
+      - path: .env
+        required: false   # runs with defaults; secrets activate optional features
     environment:
       DATABASE_URL: postgresql+asyncpg://quantlab:quantlab@postgres:5432/quantlab
       REDIS_URL: redis://redis:6379/0
