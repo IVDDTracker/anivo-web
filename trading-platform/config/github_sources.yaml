@@ -1,0 +1,24 @@
+# GitHub repositories tracked for development/security events, mapped to assets.
+# GitHub activity is contextual evidence, never a trade trigger (more commits != bullish).
+sources:
+  - name: bitcoin-core
+    repo: bitcoin/bitcoin
+    assets: [BTCUSDT]
+    reliability_score: 0.7
+    watch: [releases, commits, advisories]
+  - name: go-ethereum
+    repo: ethereum/go-ethereum
+    assets: [ETHUSDT]
+    reliability_score: 0.7
+    watch: [releases, commits, advisories]
+  - name: solana
+    repo: anza-xyz/agave
+    assets: [SOLUSDT]
+    reliability_score: 0.7
+    watch: [releases, commits, advisories]
+  - name: bnb-chain
+    repo: bnb-chain/bsc
+    assets: [BNBUSDT]
+    enabled: false
+    reliability_score: 0.7
+    watch: [releases, advisories]

@@ -1,0 +1,26 @@
+# RSS / external feeds. Official sources score higher (see DATA_SOURCES.md hierarchy).
+sources:
+  - name: binance-announcements
+    url: https://www.binance.com/en/support/announcement/rss
+    category: exchange_official
+    reliability_score: 0.95
+    enabled: false   # enable after verifying the feed URL is live in your region
+  - name: ethereum-blog
+    url: https://blog.ethereum.org/en/feed.xml
+    category: project_official
+    reliability_score: 0.9
+    assets: [ETHUSDT]
+  - name: solana-news
+    url: https://solana.com/news/rss.xml
+    category: project_official
+    reliability_score: 0.9
+    assets: [SOLUSDT]
+    enabled: false
+  - name: sec-press
+    url: https://www.sec.gov/news/pressreleases.rss
+    category: regulatory
+    reliability_score: 0.9
+  - name: coindesk
+    url: https://www.coindesk.com/arc/outboundfeeds/rss/
+    category: news
+    reliability_score: 0.7

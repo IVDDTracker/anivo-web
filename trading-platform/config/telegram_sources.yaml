@@ -1,0 +1,15 @@
+# Telegram ingestion sources.
+# ONLY chats you have explicitly added the bot to. The platform reads via the official
+# Bot API and cannot (and will not) bypass private-channel permissions.
+# reliability_score is capped at 0.35 in code — Telegram is LOW TRUST by design and
+# can never trigger a trade on its own.
+sources: []
+# Example:
+# sources:
+#   - name: example-market-chat
+#     identifier: "-1001234567890"
+#     category: community
+#     enabled: true
+#     reliability_score: 0.2
+#     symbols: [BTCUSDT, ETHUSDT]
+#     keywords: [hack, exploit, listing, delisting, unlock, outage, sec, etf]

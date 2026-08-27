@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: quantlab
+      POSTGRES_PASSWORD: quantlab
+      POSTGRES_DB: quantlab
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quantlab"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build: .
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://quantlab:quantlab@postgres:5432/quantlab
+      REDIS_URL: redis://redis:6379/0
+      API_HOST: 0.0.0.0
+    ports:
+      - "127.0.0.1:8000:8000"   # dashboard/API/metrics stay local-only
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
