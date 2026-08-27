@@ -155,7 +155,7 @@ class TestNoLookahead:
         Backtester(_cfg()).run(strat, candles)
         # at decision index i the last visible close_time must be candles[i].close_time
         # and the engine never exposes the bar used for the fill
-        for length, last_seen in zip(strat.seen_history_lengths, strat.seen_last_close_time):
+        for length, last_seen in zip(strat.seen_history_lengths, strat.seen_last_close_time, strict=True):
             assert last_seen == candles[length - 1].close_time
         assert max(strat.seen_history_lengths) <= len(candles) - 1
 
@@ -207,7 +207,7 @@ class TestWalkForward:
         assert windows
         for w in windows:
             assert w.test_start - w.train_end == 200
-        for a, b in zip(windows, windows[1:]):
+        for a, b in zip(windows, windows[1:], strict=False):
             assert b.train_start == a.train_start + 1000
 
     def test_baseline_strategies_run_end_to_end(self):
