@@ -18,6 +18,7 @@ Correctness behaviors:
 from __future__ import annotations
 
 import json
+import logging
 from datetime import timedelta
 
 import websockets
@@ -32,8 +33,6 @@ from app.models.enums import SourceType
 from app.storage.redis_client import HotState
 from app.storage.repositories import CandleRepository, EventRepository
 from app.storage.tables import TradeRow
-
-import logging
 
 log = get_logger(__name__)
 
