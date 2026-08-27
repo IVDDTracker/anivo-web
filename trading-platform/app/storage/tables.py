@@ -7,7 +7,7 @@ Retention policies for high-frequency tables: see app/storage/retention.py.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from sqlalchemy import (
@@ -24,6 +24,28 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+class UTCDateTime(TypeDecorator):
+    """Timezone-aware UTC datetimes on every backend. SQLite stores naive values;
+    this decorator normalizes to UTC on write and re-attaches tzinfo on read."""
+
+    impl = DateTime(timezone=True)
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            raise ValueError("naive datetime rejected — all timestamps must be UTC-aware")
+        return value.astimezone(UTC)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            return value.replace(tzinfo=UTC)
+        return value.astimezone(UTC)
 
 
 class MoneyType(TypeDecorator):
@@ -52,11 +74,12 @@ class MoneyType(TypeDecorator):
 
 
 MONEY = MoneyType()
+UTC_DT = UTCDateTime()
 
 
 class Base(DeclarativeBase):
     type_annotation_map = {
-        datetime: DateTime(timezone=True),
+        datetime: UTC_DT,
         Decimal: MONEY,
         dict: JSON,
         list: JSON,
@@ -295,7 +318,7 @@ class BacktestTradeRow(Base):
     symbol: Mapped[str] = mapped_column(String(20))
     direction: Mapped[str] = mapped_column(String(6))
     entry_time: Mapped[datetime]
-    exit_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    exit_time: Mapped[datetime | None] = mapped_column(UTC_DT, nullable=True)
     entry_price: Mapped[float]
     exit_price: Mapped[float | None] = mapped_column(Float, nullable=True)
     qty: Mapped[float]
@@ -346,8 +369,8 @@ class _OrderColumns:
     filled_qty: Mapped[Decimal] = mapped_column(MONEY, default=0)
     avg_fill_price: Mapped[Decimal | None] = mapped_column(MONEY, nullable=True)
     strategy: Mapped[str] = mapped_column(String(60), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(UTC_DT)
+    updated_at: Mapped[datetime] = mapped_column(UTC_DT)
     error: Mapped[str] = mapped_column(String(500), default="")
 
 
@@ -376,7 +399,7 @@ class _FillColumns:
     qty: Mapped[Decimal] = mapped_column(MONEY)
     fee: Mapped[Decimal] = mapped_column(MONEY, default=0)
     fee_asset: Mapped[str] = mapped_column(String(10), default="USDT")
-    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    timestamp: Mapped[datetime] = mapped_column(UTC_DT)
     is_maker: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
@@ -400,8 +423,8 @@ class _PositionColumns:
     target_price: Mapped[Decimal | None] = mapped_column(MONEY, nullable=True)
     strategy: Mapped[str] = mapped_column(String(60), default="")
     signal_id: Mapped[str] = mapped_column(String(36), default="")
-    opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    opened_at: Mapped[datetime] = mapped_column(UTC_DT)
+    closed_at: Mapped[datetime | None] = mapped_column(UTC_DT, nullable=True)
     realized_pnl: Mapped[Decimal] = mapped_column(MONEY, default=0)
     fees_paid: Mapped[Decimal] = mapped_column(MONEY, default=0)
     close_reason: Mapped[str] = mapped_column(String(100), default="")

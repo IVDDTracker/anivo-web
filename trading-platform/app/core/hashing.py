@@ -31,16 +31,30 @@ def normalized_text(text: str) -> str:
 
 
 def headline_cluster_key(assets: list[str], category: str, headline: str) -> str:
-    """Cluster key for cross-source confirmation: same story from many outlets clusters together."""
-    words = sorted(set(normalized_text(headline).split()))
-    significant = [w for w in words if len(w) > 3][:12]
+    """COARSE cluster key for cross-source confirmation: (assets, category).
+
+    Same-story membership within a coarse cluster is decided by word-set
+    similarity (`story_similarity`), so differently-worded reports of one event
+    cluster together while the headline itself doesn't fragment the key.
+    """
+    del headline  # intentionally not part of the key — see docstring
     h = hashlib.sha256()
     h.update(",".join(sorted(assets)).encode())
     h.update(b"|")
     h.update(category.encode())
-    h.update(b"|")
-    h.update(" ".join(significant).encode())
     return h.hexdigest()[:32]
+
+
+def significant_words(text: str) -> frozenset[str]:
+    return frozenset(w for w in normalized_text(text).split() if len(w) > 3)
+
+
+def story_similarity(a: str, b: str) -> float:
+    """Jaccard similarity of significant word sets (0..1)."""
+    wa, wb = significant_words(a), significant_words(b)
+    if not wa or not wb:
+        return 0.0
+    return len(wa & wb) / len(wa | wb)
 
 
 def deterministic_client_order_id(intent_id: str) -> str:
