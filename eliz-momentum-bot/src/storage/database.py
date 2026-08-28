@@ -207,7 +207,9 @@ class Repo:
         async with self.db.session() as s:
             row = await s.get(DailyStatsRow, day)
             if row is None:
-                row = DailyStatsRow(day=day, updated_at=now)
+                row = DailyStatsRow(day=day, trades=0, realized_pnl=0.0, fees=0.0,
+                                    consecutive_losses=0, kill_switch_fired=False,
+                                    updated_at=now)
                 s.add(row)
             row.trades += trades_delta
             row.realized_pnl += pnl_delta

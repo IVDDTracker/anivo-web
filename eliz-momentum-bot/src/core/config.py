@@ -124,6 +124,8 @@ class Settings(BaseSettings):
     min_reversal_score: float = Field(default=65.0, alias="MIN_REVERSAL_SCORE")
     short_confirmation_seconds: float = Field(default=5.0, alias="SHORT_CONFIRMATION_SECONDS")
     max_short_holding_seconds: float = Field(default=900.0, alias="MAX_SHORT_HOLDING_SECONDS")
+    short_confirmation_window_s: float = Field(default=45.0,
+                                               alias="SHORT_CONFIRMATION_WINDOW_SECONDS")
     reversal_weights: ReversalWeights = ReversalWeights()
     reversal_params: ReversalParams = ReversalParams()
     long_params: LongParams = LongParams()
