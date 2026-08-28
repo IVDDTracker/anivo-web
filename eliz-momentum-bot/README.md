@@ -19,17 +19,18 @@ coordinate pumps — it observes public messages and trades the aftermath with
 public market data. Shorting a pump's collapse bets *against* manipulation,
 not with it.
 
-It watches `@eliz883` on X in real time, classifies tweets (EARLY vs CONFIRMED
-signal), validates market conditions on Binance USDⓈ-M Futures, opens a LONG
-into the momentum, tracks the pump tick-by-tick, closes on a behavior-based
-**reversal score** (never a fixed timer), and only after a separate
-confirmation opens a managed SHORT. Everything — tweets, signals, skips,
-orders, PnL, latencies, state transitions — is persisted; Telegram reports
-every step.
+How it works: configured Telegram channels (and/or `@eliz883` on X) are
+watched in real time; messages are classified (EARLY vs CONFIRMED signal),
+market conditions are validated on Binance USDⓈ-M Futures, and the trade logic
+runs per `STRATEGY_MODE`. In `LONG_SHORT` (legacy) the bot rides the pump
+first; in `SHORT_ONLY` (default) it only fades the confirmed reversal, using
+the same behavior-based **reversal score** (never a fixed timer). Everything —
+messages, signals, skips, orders, PnL, latencies, state transitions — is
+persisted; the Telegram bot reports every step.
 
-**This bot does not assume Eliz is a good trader — it measures what her
-audience does to price, first, and only then trades it** (spec §23: measure
-before trading; uncertainty ⇒ NO TRADE).
+**This system does not assume the signal poster is a good trader — it measures
+what their audience does to price, first, and only then trades it** (core
+principle: measure before trading; uncertainty ⇒ NO TRADE).
 
 ---
 
@@ -60,7 +61,7 @@ git clone <repo> && cd eliz-momentum-bot
 python3 -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env      # then fill in tokens
-pytest                    # 88 offline tests, no network needed
+pytest                    # 104 offline tests, no network needed
 ```
 
 Or Docker:
