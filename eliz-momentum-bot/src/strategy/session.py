@@ -33,7 +33,12 @@ from src.execution.order_manager import OrderManager
 from src.execution.position_manager import PositionManager
 from src.risk.risk_manager import RiskManager
 from src.storage.database import Repo
-from src.strategy.entry import EntryDecision, EntryInputs, validate_entry
+from src.strategy.entry import (
+    EntryDecision,
+    EntryInputs,
+    validate_entry,
+    validate_watch_entry,
+)
 from src.strategy.exit import LongLegManager, ShortConfirmation, ShortLegManager
 from src.strategy.momentum import MomentumTracker
 from src.strategy.reversal import ReversalReading, ReversalScorer
@@ -150,6 +155,30 @@ class TradeSession:
         await self._notify("long_opened", self, result, inputs)
         return True
 
+    async def start_watch(self, inputs: EntryInputs, *,
+                          max_age_seconds: float | None = None) -> bool:
+        """SHORT_ONLY entry (spec pivot): no long leg. Validate market quality,
+        then MONITORING_PUMP — a real pump (≥ MIN_PUMP_PERCENT vs the message-time
+        reference) followed by a reversal score breach arms the short pipeline."""
+        now = self.clock.now()
+        await self.sm.to(TradeState.MARKET_VALIDATION,
+                         "validating market conditions (short-only watch)", now)
+        decision: EntryDecision = validate_watch_entry(
+            self.tweet, self.classification, self.symbol, inputs, self.cfg,
+            max_age_seconds=max_age_seconds)
+        if decision.snapshot is not None:
+            await self.repo.store_snapshot(self.id, decision.snapshot, "watch_validation")
+        if not decision.approved:
+            await self._skip(decision.skip_reason or SkipReason.RISK_LIMIT, decision.detail)
+            return False
+        # baseline = price at message time: peak_gain then measures the PUMP itself
+        self.tracker = MomentumTracker(
+            entry_price=inputs.reference_price, entry_time=now,
+            flow_window_s=self.cfg.reversal_params.flow_window_s,
+            momentum_window_s=self.cfg.reversal_params.momentum_window_s)
+        await self.sm.to(TradeState.MONITORING_PUMP, decision.detail, now)
+        return True
+
     async def _skip(self, reason: SkipReason, detail: str) -> None:
         await self.sm.to(TradeState.SKIPPED, f"{reason}: {detail}", self.clock.now())
         await self.repo.mark_signal_skipped(self.tweet.tweet_id, reason)
@@ -179,6 +208,22 @@ class TradeSession:
         metrics = self.tracker.metrics(now)
         reading = self.scorer.score(metrics)
         self.last_reversal = reading
+
+        if self.sm.state == TradeState.MONITORING_PUMP:
+            if metrics.seconds_since_entry > self.cfg.pump_watch_window_seconds:
+                await self.sm.to(TradeState.DONE,
+                                 f"watch window {self.cfg.pump_watch_window_seconds:.0f}s "
+                                 f"expired (peak gain {metrics.peak_gain_pct:.2f}%)", now)
+                await self._notify("session_done", self)
+                return
+            pumped = metrics.peak_gain_pct >= self.cfg.min_pump_percent
+            if pumped and reading.score >= self.cfg.min_reversal_score:
+                self.short_conf = ShortConfirmation(
+                    cfg=self.cfg, long_exit_price=metrics.current_price, started_at=now)
+                await self.sm.to(TradeState.WAITING_SHORT_CONFIRMATION,
+                                 f"pump +{metrics.peak_gain_pct:.2f}% peaked; reversal "
+                                 f"{reading.score:.0f} — awaiting confirmation", now)
+            return
 
         if self.sm.state == TradeState.LONG_OPEN:
             protective = self.long_mgr.protective_exit(metrics.current_price, now)

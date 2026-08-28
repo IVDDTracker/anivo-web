@@ -25,7 +25,7 @@ from decimal import Decimal
 
 from src.backtest.event_study import EventTicks
 from src.core.clock import SimClock
-from src.core.config import Settings, get_settings
+from src.core.config import Settings, StrategyMode, get_settings
 from src.core.domain import (
     AggTrade,
     BookTop,
@@ -97,13 +97,19 @@ async def simulate_event(ev: dict, ticks: EventTicks, cfg: Settings, repo: Repo,
         return {"tweet_id": ev["tweet_id"], "result": "no ticks before decision time"}
     mid = float(ticks.price[known][-1])
     await session.on_book(_book(mid, spread_bps, clock.now()))
-    started = await session.start(EntryInputs(
+    inputs = EntryInputs(
         now=clock.now(), reference_price=reference, mid_price=mid,
         spread_pct=spread_bps / 100.0,
         volume_24h_quote=cfg.min_24h_volume,       # book/volume not in historical data:
         bid_liquidity_usdt=cfg.min_orderbook_liquidity,   # neutral pass-through values
         ask_liquidity_usdt=cfg.min_orderbook_liquidity,
-        feed_staleness_s=0.0))
+        feed_staleness_s=0.0)
+    if cfg.strategy_mode == StrategyMode.SHORT_ONLY:
+        # the message may be old relative to sim latency — age gate is not the
+        # point of a replay, the pump/reversal gates are
+        started = await session.start_watch(inputs, max_age_seconds=float("inf"))
+    else:
+        started = await session.start(inputs)
     if not started:
         return {"tweet_id": ev["tweet_id"], "result": f"skipped: {session.sm.history[-1][1]}"}
 
@@ -150,7 +156,8 @@ async def run(args: argparse.Namespace) -> dict:
                                                  latency_s=args.latency_s,
                                                  spread_bps=args.spread_bps))
         report = await build_report(repo)
-        return {"assumptions": {
+        return {"strategy_mode": cfg.strategy_mode.value,
+                "assumptions": {
                     "simulated_latency_s": args.latency_s,
                     "synthetic_spread_bps": args.spread_bps,
                     "note": "historical order books unavailable; spread/liquidity "

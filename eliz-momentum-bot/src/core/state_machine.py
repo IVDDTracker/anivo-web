@@ -16,6 +16,7 @@ class TradeState(StrEnum):
     SIGNAL_DETECTED = "SIGNAL_DETECTED"
     MARKET_VALIDATION = "MARKET_VALIDATION"
     ENTRY_APPROVED = "ENTRY_APPROVED"
+    MONITORING_PUMP = "MONITORING_PUMP"          # SHORT_ONLY: wait for pump + reversal
     LONG_OPEN = "LONG_OPEN"
     LONG_EXIT = "LONG_EXIT"
     WAITING_SHORT_CONFIRMATION = "WAITING_SHORT_CONFIRMATION"
@@ -28,7 +29,10 @@ class TradeState(StrEnum):
 
 _ALLOWED: dict[TradeState, set[TradeState]] = {
     TradeState.SIGNAL_DETECTED: {TradeState.MARKET_VALIDATION, TradeState.SKIPPED},
-    TradeState.MARKET_VALIDATION: {TradeState.ENTRY_APPROVED, TradeState.SKIPPED},
+    TradeState.MARKET_VALIDATION: {TradeState.ENTRY_APPROVED, TradeState.MONITORING_PUMP,
+                                   TradeState.SKIPPED},
+    TradeState.MONITORING_PUMP: {TradeState.WAITING_SHORT_CONFIRMATION, TradeState.DONE,
+                                 TradeState.SKIPPED, TradeState.ABORTED},
     TradeState.ENTRY_APPROVED: {TradeState.LONG_OPEN, TradeState.SKIPPED, TradeState.ABORTED},
     TradeState.LONG_OPEN: {TradeState.LONG_EXIT, TradeState.ABORTED},
     TradeState.LONG_EXIT: {TradeState.WAITING_SHORT_CONFIRMATION, TradeState.DONE,

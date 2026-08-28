@@ -20,6 +20,7 @@ dependencies = [
     "pandas>=2.2",
     "PyYAML>=6.0",
     "anthropic>=1.0",
+    "telethon>=1.36",
 ]
 
 [project.optional-dependencies]

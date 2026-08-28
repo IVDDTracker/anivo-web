@@ -2,8 +2,22 @@
 
 Event-driven research & trading system for the hypothesis:
 
-> **ELIZ TWEET → audience reaction → short-term buying pressure → local peak →
-> mean reversion.**
+> **SIGNAL MESSAGE (Telegram channel / tweet) → audience reaction → short-term
+> buying pressure → local peak → mean reversion.**
+
+**Default configuration (v2 pivot): Telegram channels as the free signal
+source + SHORT_ONLY strategy.** The bot never enters the pump; it waits for a
+real pump to print on the exchange (≥ `MIN_PUMP_PERCENT` vs the message-time
+price) and a *sustained, confirmed* reversal, then shorts the fade with strict
+SL/TP/trailing. This kills both weaknesses of the original design: the X API
+cost (Pro streaming ≈ $5k/mo) and the sub-second latency race — the reversal
+side is timed in tens of seconds, not milliseconds.
+
+Rules of engagement: the account only reads channels YOU joined; messages are
+data, never instructions; and this bot must never be used to join or
+coordinate pumps — it observes public messages and trades the aftermath with
+public market data. Shorting a pump's collapse bets *against* manipulation,
+not with it.
 
 It watches `@eliz883` on X in real time, classifies tweets (EARLY vs CONFIRMED
 signal), validates market conditions on Binance USDⓈ-M Futures, opens a LONG
@@ -63,7 +77,44 @@ position it doesn't recognize, or a DB position the exchange lost, **trips the
 kill switch** instead of guessing. Duplicate orders are impossible by
 construction: every order intent has a deterministic `newClientOrderId`.
 
-## X API setup
+## Telegram source setup (default, free)
+
+1. https://my.telegram.org → API development tools → `TELEGRAM_API_ID` + `TELEGRAM_API_HASH`.
+2. `python -m src.telegram_source.login` → interactive phone login → paste the
+   printed `TELEGRAM_SESSION` into `.env` (it's a credential — keep it secret).
+3. Join the channels you want to monitor **with that account**, then list them:
+   `TG_SOURCE_CHANNELS=@channel1,@channel2`.
+4. Message latency (post → bot) is typically 1-3s and is measured per message.
+
+Research pipeline for Telegram history (free, no X account needed):
+
+```bash
+python -m src.backtest.tg_history --limit 2000   # channel history + aggTrades
+python -m src.backtest.event_study               # pump/dump distributions
+python -m src.backtest.simulator                 # SHORT_ONLY causal replay
+python -m src.metrics                            # short-leg performance
+```
+
+**Do not skip this.** If the event study says pumps in your channels don't
+retrace reliably after costs, the strategy has no edge — that's a result, not
+a failure.
+
+### SHORT_ONLY flow
+
+`SIGNAL_DETECTED → MARKET_VALIDATION → MONITORING_PUMP →
+WAITING_SHORT_CONFIRMATION → SHORT_OPEN → SHORT_EXIT → DONE`
+
+- MARKET_VALIDATION: spread/volume/liquidity/staleness gates (the chase filter
+  is intentionally OFF — a pump having happened is the point).
+- MONITORING_PUMP: needs peak gain ≥ `MIN_PUMP_PERCENT` AND reversal score ≥
+  `MIN_REVERSAL_SCORE` within `PUMP_WATCH_WINDOW_SECONDS`, else DONE (no trade).
+- Confirmation: score must SUSTAIN `SHORT_CONFIRMATION_SECONDS` below VWAP with
+  a bounce veto — never short into strength; a resuming pump hits a tight SL.
+- **Never short obvious real news** (listings etc.): the classifier tags them,
+  and the bearish/short filters plus tight SL bound the damage — but review
+  skips/PnL per channel in the DB and drop channels that post news, not pumps.
+
+## X API setup (only if SIGNAL_SOURCE includes X)
 
 1. Developer account at developer.x.com → create an app → **Bearer Token** →
    `X_BEARER_TOKEN`.

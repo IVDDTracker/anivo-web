@@ -26,6 +26,17 @@ class ListenerMode(StrEnum):
     POLL = "poll"
 
 
+class SignalSource(StrEnum):
+    X = "X"
+    TELEGRAM = "TELEGRAM"
+    BOTH = "BOTH"
+
+
+class StrategyMode(StrEnum):
+    LONG_SHORT = "LONG_SHORT"    # original: ride the pump, then fade it
+    SHORT_ONLY = "SHORT_ONLY"    # skip the pump entirely; only fade confirmed reversals
+
+
 class ReversalWeights(BaseModel):
     """Weights of the 0-100 reversal score components (sum need not be 100;
     normalized at runtime). Tune via backtest, not by editing code."""
@@ -71,7 +82,10 @@ class Settings(BaseSettings):
     enable_live_trading: bool = Field(default=False, alias="ENABLE_LIVE_TRADING")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
-    # X / Twitter
+    signal_source: SignalSource = Field(default=SignalSource.TELEGRAM, alias="SIGNAL_SOURCE")
+    strategy_mode: StrategyMode = Field(default=StrategyMode.SHORT_ONLY, alias="STRATEGY_MODE")
+
+    # X / Twitter (only used when SIGNAL_SOURCE includes X)
     x_bearer_token: str = Field(default="", alias="X_BEARER_TOKEN")
     x_target_username: str = Field(default="eliz883", alias="X_TARGET_USERNAME")
     x_listener_mode: ListenerMode = Field(default=ListenerMode.AUTO, alias="X_LISTENER_MODE")
@@ -88,9 +102,23 @@ class Settings(BaseSettings):
     fstream_base: str = "wss://fstream.binance.com"
     recv_window_ms: int = 5000
 
-    # Telegram
+    # Telegram notifications (bot)
     telegram_bot_token: str = Field(default="", alias="TELEGRAM_BOT_TOKEN")
     telegram_chat_id: str = Field(default="", alias="TELEGRAM_CHAT_ID")
+
+    # Telegram SOURCE ingestion (your own user account via MTProto/Telethon;
+    # api credentials from https://my.telegram.org — free)
+    telegram_api_id: int = Field(default=0, alias="TELEGRAM_API_ID")
+    telegram_api_hash: str = Field(default="", alias="TELEGRAM_API_HASH")
+    telegram_session: str = Field(default="", alias="TELEGRAM_SESSION")
+    tg_source_channels: str = Field(default="", alias="TG_SOURCE_CHANNELS")
+    tg_max_message_age_seconds: float = Field(default=90.0,
+                                              alias="TG_MAX_MESSAGE_AGE_SECONDS")
+
+    # SHORT_ONLY mode gates
+    min_pump_percent: float = Field(default=1.5, alias="MIN_PUMP_PERCENT")
+    pump_watch_window_seconds: float = Field(default=900.0,
+                                             alias="PUMP_WATCH_WINDOW_SECONDS")
 
     # LLM (optional, ambiguous tweets only)
     anthropic_api_key: str = Field(default="", alias="ANTHROPIC_API_KEY")
@@ -138,6 +166,10 @@ class Settings(BaseSettings):
     data_dir: Path = Path("data")
 
     @property
+    def tg_channels(self) -> list[str]:
+        return [c.strip() for c in self.tg_source_channels.split(",") if c.strip()]
+
+    @property
     def live_execution_enabled(self) -> bool:
         """True only when BOTH safety flags are set (spec §13)."""
         return self.mode == Mode.LIVE and self.enable_live_trading
@@ -148,7 +180,8 @@ class Settings(BaseSettings):
 
     def secrets(self) -> list[str]:
         return [s for s in (self.x_bearer_token, self.binance_api_key, self.binance_api_secret,
-                            self.telegram_bot_token, self.anthropic_api_key) if s]
+                            self.telegram_bot_token, self.anthropic_api_key,
+                            self.telegram_api_hash, self.telegram_session) if s]
 
 
 @lru_cache
