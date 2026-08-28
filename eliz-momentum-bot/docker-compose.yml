@@ -1,0 +1,16 @@
+services:
+  bot:
+    build: .
+    env_file:
+      - path: .env
+        required: false   # PAPER mode runs with just X_BEARER_TOKEN
+    environment:
+      DATABASE_URL: sqlite+aiosqlite:///data/elizbot.db
+    volumes:
+      - botdata:/srv/elizbot/data
+    restart: unless-stopped
+    # Optional: switch to PostgreSQL by adding a postgres service and setting
+    # DATABASE_URL: postgresql+asyncpg://elizbot:elizbot@postgres:5432/elizbot
+
+volumes:
+  botdata:
